@@ -133,10 +133,6 @@
         <div class="card-title"><i class="ti ti-chart-bar"></i> Simulation results</div>
         <div id="results-content"></div>
       </div>
-      <div class="card">
-        <div class="card-title"><i class="ti ti-robot"></i> AI trade verdict</div>
-        <div id="api-verdict"><div class="loader"></div></div>
-      </div>
       <button class="btn btn-ghost" style="margin-top:.5rem" onclick="resetToTrades()"><i class="ti ti-arrow-left"></i> Analyze another trade</button>
     </div>
   </div>
@@ -188,10 +184,6 @@
         <div class="card-title"><i class="ti ti-chart-bar"></i> Simulation results</div>
         <div id="manual-results-content"></div>
       </div>
-      <div class="card">
-        <div class="card-title"><i class="ti ti-robot"></i> AI trade verdict</div>
-        <div id="manual-api-verdict"><div class="loader"></div></div>
-      </div>
     </div>
   </div>
 </div>
@@ -232,7 +224,8 @@ async function fetchLeagues(){
   try{
     const user = await sleeper(`/user/${un}`).catch(()=>{throw new Error(`User "${un}" not found. Check spelling — usernames are case-sensitive.`);});
     state.userId=user.user_id;
-    const seasons=['2025','2024','2023','2022','2021','2020'];
+    const currentYear=new Date().getFullYear();
+const seasons=Array.from({length:6},(_,i)=>String(currentYear-i));
     let all=[];
     for(const s of seasons){
       try{
@@ -445,12 +438,12 @@ Actual record: ${totalActualW}–${totalActualL} | Without trade: ${totalCFW}–
 Points differential: ${ptsDiff} | Impact: ${outcome}
 Start your verdict with 🟢 Trade won / 🔴 Trade lost / 🟡 Trade was a wash, then explain briefly.`;
   try{
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+    const resp=await fetch('/api/verdict',{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})
+      body:JSON.stringify({prompt})
     });
     const data=await resp.json();
-    const text=data.content?.find(c=>c.type==='text')?.text||'Unable to generate verdict.';
+    const text=data.text||'Unable to generate verdict.';
     document.getElementById(targetId).innerHTML=`<div style="line-height:1.7;font-size:.9rem">${esc(text).replace(/\n/g,'<br>')}</div>`;
   }catch(e){
     document.getElementById(targetId).innerHTML='<div class="error"><i class="ti ti-alert-circle"></i> Could not generate AI verdict.</div>';
