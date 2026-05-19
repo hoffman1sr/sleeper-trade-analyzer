@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Sleeper Trade Analyzer</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css"/>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0f1318;color:#e8eaf0;min-height:100vh}
+  .app{max-width:900px;margin:0 auto;padding:2rem 1rem}
+  h1{font-size:1.6rem;font-weight:600;color:#fff;display:flex;align-items:center;gap:.5rem}
+  h1 span.tag{font-size:.75rem;background:#1e3a5f;color:#60a5fa;padding:3px 10px;border-radius:20px;font-weight:500}
+  .subtitle{color:#8892a0;font-size:.9rem;margin:.4rem 0 2rem}
+  .tabs{display:flex;gap:4px;background:#1a1f2a;border-radius:10px;padding:4px;margin-bottom:2rem;width:fit-content}
+  .tab{padding:7px 18px;border-radius:7px;font-size:.85rem;cursor:pointer;color:#8892a0;border:none;background:none;transition:all .15s}
+  .tab.active{background:#2a3142;color:#fff;font-weight:500}
+  .card{background:#1a1f2a;border:1px solid #2a3142;border-radius:12px;padding:1.5rem;margin-bottom:1.25rem}
+  .card-title{font-size:.8rem;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:#60a5fa;margin-bottom:1rem}
+  .form-row{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}
+  .form-group{display:flex;flex-direction:column;gap:6px;flex:1;min-width:180px}
+  label{font-size:.82rem;color:#8892a0}
+  input,select{background:#0f1318;border:1px solid #2a3142;border-radius:8px;padding:9px 12px;color:#e8eaf0;font-size:.9rem;outline:none;width:100%}
+  input:focus,select:focus{border-color:#3b82f6}
+  select option{background:#1a1f2a}
+  .btn{padding:9px 20px;border-radius:8px;font-size:.88rem;font-weight:500;cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+  .btn-primary{background:#3b82f6;color:#fff}
+  .btn-primary:hover{background:#2563eb}
+  .btn-primary:disabled{background:#1e3a5f;color:#4a5568;cursor:not-allowed}
+  .btn-ghost{background:transparent;color:#8892a0;border:1px solid #2a3142}
+  .btn-ghost:hover{background:#2a3142;color:#fff}
+  .loader{display:inline-block;width:16px;height:16px;border:2px solid #3b82f6;border-top-color:transparent;border-radius:50%;animation:spin .6s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .league-item{display:flex;align-items:center;justify-content:space-between;padding:12px;background:#0f1318;border-radius:8px;margin-bottom:8px;cursor:pointer;border:1px solid transparent;transition:all .15s}
+  .league-item:hover,.league-item.selected{border-color:#3b82f6;background:#1e2d45}
+  .league-name{font-size:.92rem;font-weight:500}
+  .league-meta{font-size:.78rem;color:#8892a0;margin-top:2px}
+  .badge{font-size:.7rem;padding:2px 8px;border-radius:20px;font-weight:500}
+  .badge-neutral{background:#1e2d45;color:#93c5fd}
+  .trade-card{background:#0f1318;border:1px solid #2a3142;border-radius:10px;padding:1rem;margin-bottom:10px;cursor:pointer;transition:all .15s}
+  .trade-card:hover,.trade-card.selected{border-color:#3b82f6}
+  .trade-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .trade-players{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center}
+  .trade-side .got{color:#86efac;font-size:.78rem;margin-bottom:3px}
+  .trade-side .gave{color:#fca5a5;font-size:.78rem;margin-bottom:3px}
+  .trade-arrow{color:#4a5568;font-size:1.2rem;text-align:center}
+  .player-name{font-weight:500;font-size:.88rem}
+  .result-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.25rem}
+  .metric{background:#0f1318;border-radius:10px;padding:1rem;text-align:center}
+  .metric-label{font-size:.75rem;color:#8892a0;margin-bottom:6px}
+  .metric-value{font-size:1.5rem;font-weight:600}
+  .metric-sub{font-size:.75rem;color:#8892a0;margin-top:3px}
+  .vs-bar{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin-bottom:1rem}
+  .vs-side{background:#0f1318;border-radius:8px;padding:.75rem 1rem}
+  .vs-label{font-size:.75rem;color:#8892a0;margin-bottom:4px}
+  .vs-record{font-size:1.2rem;font-weight:600}
+  .vs-pts{font-size:.78rem;color:#8892a0}
+  .vs-divider{text-align:center;font-size:.85rem;color:#4a5568;font-weight:500}
+  .verdict{border-radius:10px;padding:1rem 1.25rem;margin-top:1rem;line-height:1.6;font-size:.88rem}
+  .week-chart{margin-top:1.25rem}
+  .week-row{display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:.78rem}
+  .week-num{width:52px;color:#8892a0;flex-shrink:0}
+  .bar-wrap{flex:1;display:flex;gap:4px}
+  .bar{height:18px;border-radius:3px;min-width:3px;position:relative;display:flex;align-items:center;padding:0 5px;font-size:.7rem;font-weight:500;overflow:hidden;white-space:nowrap}
+  .bar-actual{background:#1e3a5f;color:#93c5fd}
+  .bar-counterfactual{background:#14532d;color:#86efac}
+  .bar-worse{background:#4a1515;color:#fca5a5}
+  .outcome-w{color:#86efac;width:14px;flex-shrink:0}
+  .outcome-l{color:#fca5a5;width:14px;flex-shrink:0}
+  .steps{display:flex;align-items:center;gap:8px;margin-bottom:2rem;flex-wrap:wrap}
+  .step{font-size:.8rem;color:#4a5568;display:flex;align-items:center;gap:6px}
+  .step.active{color:#fff}
+  .step.done{color:#3b82f6}
+  .step-num{width:22px;height:22px;border-radius:50%;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:.72rem;flex-shrink:0}
+  .step-sep{color:#2a3142;font-size:.9rem}
+  .manual-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+  .player-input-row{display:flex;gap:8px;margin-bottom:8px;align-items:center}
+  .player-input-row input{flex:1}
+  .add-player-btn{background:none;border:1px dashed #2a3142;color:#8892a0;border-radius:8px;padding:8px;cursor:pointer;font-size:.82rem;width:100%;transition:all .15s}
+  .add-player-btn:hover{border-color:#3b82f6;color:#60a5fa}
+  .error{color:#fca5a5;font-size:.82rem;margin-top:8px;display:flex;align-items:center;gap:5px}
+  .info-box{background:#1e2d45;border:1px solid #1e3a5f;border-radius:8px;padding:.85rem 1rem;font-size:.82rem;color:#93c5fd;margin-bottom:1rem;display:flex;gap:8px}
+  .section-divider{border:none;border-top:1px solid #2a3142;margin:1.25rem 0}
+  .hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="app">
+  <h1><i class="ti ti-arrows-exchange" style="font-size:1.4rem;color:#3b82f6"></i> Sleeper Trade Analyzer <span class="tag">BETA</span></h1>
+  <p class="subtitle">Simulate what your season would have looked like if you never made that trade.</p>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('fetch')"><i class="ti ti-user-search"></i> Fetch from Sleeper</button>
+    <button class="tab" onclick="switchTab('manual')"><i class="ti ti-pencil"></i> Manual Entry</button>
+  </div>
+
+  <div id="tab-fetch">
+    <div class="steps">
+      <div class="step done" id="step1"><div class="step-num"><i class="ti ti-check" style="font-size:.65rem"></i></div> Username</div>
+      <div class="step-sep">›</div>
+      <div class="step" id="step2"><div class="step-num">2</div> League</div>
+      <div class="step-sep">›</div>
+      <div class="step" id="step3"><div class="step-num">3</div> Trade</div>
+      <div class="step-sep">›</div>
+      <div class="step" id="step4"><div class="step-num">4</div> Results</div>
+    </div>
+
+    <div class="card" id="card-username">
+      <div class="card-title"><i class="ti ti-user"></i> Your Sleeper username</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="username-input" placeholder="e.g. johndoe" onkeydown="if(event.key==='Enter')fetchLeagues()"/>
+        </div>
+        <button class="btn btn-primary" onclick="fetchLeagues()" id="fetch-btn"><i class="ti ti-search"></i> Find leagues</button>
+      </div>
+      <div id="fetch-error" class="error hidden"><i class="ti ti-alert-circle"></i> <span></span></div>
+    </div>
+
+    <div class="card hidden" id="card-leagues">
+      <div class="card-title"><i class="ti ti-trophy"></i> Select a league</div>
+      <div id="leagues-list"></div>
+    </div>
+
+    <div class="card hidden" id="card-trades">
+      <div class="card-title"><i class="ti ti-arrows-exchange"></i> Select a trade to analyze</div>
+      <div class="info-box"><i class="ti ti-info-circle"></i> Showing trades involving your team. Pick one to run the what-if simulation.</div>
+      <div id="trades-list"></div>
+    </div>
+
+    <div id="card-results" class="hidden">
+      <div class="card">
+        <div class="card-title"><i class="ti ti-chart-bar"></i> Simulation results</div>
+        <div id="results-content"></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="ti ti-robot"></i> AI trade verdict</div>
+        <div id="api-verdict"><div class="loader"></div></div>
+      </div>
+      <button class="btn btn-ghost" style="margin-top:.5rem" onclick="resetToTrades()"><i class="ti ti-arrow-left"></i> Analyze another trade</button>
+    </div>
+  </div>
+
+  <div id="tab-manual" class="hidden">
+    <div class="card">
+      <div class="card-title"><i class="ti ti-pencil"></i> Trade details</div>
+      <div class="info-box"><i class="ti ti-info-circle"></i> Enter the players involved and their weekly point totals after the trade was made.</div>
+      <div class="manual-grid">
+        <div>
+          <label style="font-size:.82rem;color:#8892a0;display:block;margin-bottom:8px">Players you received</label>
+          <div id="received-players">
+            <div class="player-input-row"><input type="text" placeholder="Player name" class="rec-name"/><input type="text" placeholder="Wk pts (comma sep)" class="rec-pts" style="max-width:160px"/></div>
+          </div>
+          <button class="add-player-btn" onclick="addPlayerRow('received-players','rec-name','rec-pts')"><i class="ti ti-plus"></i> Add player</button>
+        </div>
+        <div>
+          <label style="font-size:.82rem;color:#8892a0;display:block;margin-bottom:8px">Players you gave away</label>
+          <div id="gave-players">
+            <div class="player-input-row"><input type="text" placeholder="Player name" class="gave-name"/><input type="text" placeholder="Wk pts (comma sep)" class="gave-pts" style="max-width:160px"/></div>
+          </div>
+          <button class="add-player-btn" onclick="addPlayerRow('gave-players','gave-name','gave-pts')"><i class="ti ti-plus"></i> Add player</button>
+        </div>
+      </div>
+      <hr class="section-divider"/>
+      <div class="form-row" style="flex-wrap:wrap">
+        <div class="form-group" style="max-width:200px">
+          <label>Total weeks in season</label>
+          <input type="number" id="manual-total-weeks" value="14" min="1" max="18"/>
+        </div>
+        <div class="form-group" style="max-width:200px">
+          <label>Trade happened after week</label>
+          <input type="number" id="manual-trade-week" value="5" min="1" max="17"/>
+        </div>
+        <div class="form-group" style="max-width:200px">
+          <label>Your weekly scores (actual)</label>
+          <input type="text" id="manual-team-scores" placeholder="e.g. 110,95,120,..."/>
+        </div>
+        <div class="form-group" style="max-width:200px">
+          <label>Opponent scores each week</label>
+          <input type="text" id="manual-opp-scores" placeholder="e.g. 100,115,88,..."/>
+        </div>
+      </div>
+      <button class="btn btn-primary" style="margin-top:1rem" onclick="runManualSim()"><i class="ti ti-player-play"></i> Run simulation</button>
+      <div id="manual-error" class="error hidden"><i class="ti ti-alert-circle"></i> <span></span></div>
+    </div>
+    <div id="manual-results" class="hidden">
+      <div class="card">
+        <div class="card-title"><i class="ti ti-chart-bar"></i> Simulation results</div>
+        <div id="manual-results-content"></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="ti ti-robot"></i> AI trade verdict</div>
+        <div id="manual-api-verdict"><div class="loader"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// *** KEY CHANGE: all API calls go through /api/sleeper proxy instead of directly to Sleeper ***
+const PROXY = '/api/sleeper';
+let state = { userId:null, leagues:[], selectedLeague:null, selectedTrade:null, rosterMap:{}, myRosterId:null };
+
+function switchTab(t){
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',i===(t==='fetch'?0:1)));
+  document.getElementById('tab-fetch').classList.toggle('hidden',t!=='fetch');
+  document.getElementById('tab-manual').classList.toggle('hidden',t!=='manual');
+}
+
+function setStep(n){
+  for(let i=1;i<=4;i++){
+    const el=document.getElementById('step'+i);
+    el.classList.toggle('active',i===n);
+    el.classList.toggle('done',i<n);
+    if(i<n) el.querySelector('.step-num').innerHTML='<i class="ti ti-check" style="font-size:.65rem"></i>';
+    else if(i>n) el.querySelector('.step-num').textContent=i;
+  }
+}
+
+async function sleeper(path){
+  const r = await fetch(`${PROXY}${path}`);
+  if(!r.ok) throw new Error(`API error ${r.status} for ${path}`);
+  return r.json();
+}
+
+async function fetchLeagues(){
+  const un=document.getElementById('username-input').value.trim();
+  if(!un){showError('fetch-error','Please enter a username');return;}
+  const btn=document.getElementById('fetch-btn');
+  btn.disabled=true;btn.innerHTML='<span class="loader"></span> Loading...';
+  hideError('fetch-error');
+  try{
+    const user = await sleeper(`/user/${un}`).catch(()=>{throw new Error(`User "${un}" not found. Check spelling — usernames are case-sensitive.`);});
+    state.userId=user.user_id;
+    const seasons=['2024','2023','2022','2021','2020'];
+    let all=[];
+    for(const s of seasons){
+      try{
+        const ls=await sleeper(`/user/${user.user_id}/leagues/nfl/${s}`);
+        if(ls&&ls.length) all.push(...ls.map(l=>({...l,season:s})));
+      }catch(e){}
+    }
+    if(!all.length) throw new Error('No leagues found for this user.');
+    state.leagues=all;
+    renderLeagues(all);
+    document.getElementById('card-leagues').classList.remove('hidden');
+    setStep(2);
+  }catch(e){
+    showError('fetch-error',e.message||'Failed to fetch. Check username and try again.');
+  }
+  btn.disabled=false;btn.innerHTML='<i class="ti ti-search"></i> Find leagues';
+}
+
+function renderLeagues(leagues){
+  document.getElementById('leagues-list').innerHTML=leagues.map((l,i)=>`
+    <div class="league-item" onclick="selectLeague(${i})">
+      <div>
+        <div class="league-name">${esc(l.name)}</div>
+        <div class="league-meta">${l.season} season · ${l.total_rosters} teams</div>
+      </div>
+      <i class="ti ti-chevron-right" style="color:#4a5568"></i>
+    </div>`).join('');
+}
+
+async function selectLeague(idx){
+  document.querySelectorAll('.league-item').forEach((el,i)=>el.classList.toggle('selected',i===idx));
+  state.selectedLeague=state.leagues[idx];
+  const tradesEl=document.getElementById('card-trades');
+  tradesEl.classList.remove('hidden');
+  tradesEl.innerHTML='<div class="card-title"><i class="ti ti-arrows-exchange"></i> Loading trades...</div><div class="loader"></div>';
+  try{
+    const [ros,users]=await Promise.all([
+      sleeper(`/league/${state.selectedLeague.league_id}/rosters`),
+      sleeper(`/league/${state.selectedLeague.league_id}/users`)
+    ]);
+    const userMap={};
+    users.forEach(u=>userMap[u.user_id]={name:u.display_name||u.username});
+    state.rosterMap={};
+    ros.forEach(r=>{state.rosterMap[r.roster_id]={...r,displayName:userMap[r.owner_id]?.name||`Team ${r.roster_id}`};});
+    const myRoster=ros.find(r=>r.owner_id===state.userId);
+    if(!myRoster) throw new Error("Couldn't find your roster in this league.");
+    state.myRosterId=myRoster.roster_id;
+
+    if(!window._players){
+      window._players=await sleeper('/players/nfl').catch(()=>({}));
+    }
+
+    const totWks=state.selectedLeague.settings?.playoff_week_start||14;
+    const txAll=[];
+    for(let w=1;w<=totWks;w++){
+      try{
+        const tx=await sleeper(`/league/${state.selectedLeague.league_id}/transactions/${w}`);
+        if(tx&&tx.length) txAll.push(...tx.map(t=>({...t,week:w})));
+      }catch(e){}
+    }
+    const myTrades=txAll.filter(t=>t.type==='trade'&&t.roster_ids?.includes(state.myRosterId));
+    state.transactions=myTrades;
+    renderTrades(myTrades);
+    setStep(3);
+  }catch(e){
+    tradesEl.innerHTML=`<div class="card-title"><i class="ti ti-arrows-exchange"></i> Trades</div><div class="error"><i class="ti ti-alert-circle"></i> ${esc(e.message)}</div>`;
+  }
+}
+
+function renderTrades(trades){
+  const el=document.getElementById('card-trades');
+  const P=window._players||{};
+  if(!trades.length){
+    el.innerHTML='<div class="card-title"><i class="ti ti-arrows-exchange"></i> No trades found</div><p style="color:#8892a0;font-size:.88rem">No trades were found for your team in this league.</p>';
+    return;
+  }
+  el.innerHTML='<div class="card-title"><i class="ti ti-arrows-exchange"></i> Select a trade to analyze</div>'+
+    '<div class="info-box"><i class="ti ti-info-circle"></i> Showing trades involving your team. Pick one to run the what-if simulation.</div>'+
+    trades.map((t,i)=>{
+      const myIdx=t.roster_ids.indexOf(state.myRosterId);
+      const theirIdx=myIdx===0?1:0;
+      const iGot=(t.adds?Object.entries(t.adds).filter(([,rid])=>rid===state.myRosterId).map(([pid])=>P[pid]?.full_name||pid):[]);
+      const iGave=(t.drops?Object.entries(t.drops).filter(([,rid])=>rid===state.myRosterId).map(([pid])=>P[pid]?.full_name||pid):[]);
+      const oppName=state.rosterMap[t.roster_ids[theirIdx]]?.displayName||'Opponent';
+      return `<div class="trade-card" onclick="selectTrade(${i})">
+        <div class="trade-header">
+          <span style="font-size:.85rem;font-weight:500">vs ${esc(oppName)}</span>
+          <span class="badge badge-neutral">Week ${t.week}</span>
+        </div>
+        <div class="trade-players">
+          <div class="trade-side"><div class="got">You received</div>${iGot.map(p=>`<div class="player-name">${esc(p)}</div>`).join('')||'<div style="color:#4a5568;font-size:.78rem">picks/other</div>'}</div>
+          <div class="trade-arrow"><i class="ti ti-arrows-exchange"></i></div>
+          <div class="trade-side"><div class="gave">You gave</div>${iGave.map(p=>`<div class="player-name">${esc(p)}</div>`).join('')||'<div style="color:#4a5568;font-size:.78rem">picks/other</div>'}</div>
+        </div>
+      </div>`;
+    }).join('');
+}
+
+async function selectTrade(idx){
+  state.selectedTrade=state.transactions[idx];
+  document.querySelectorAll('.trade-card').forEach((el,i)=>el.classList.toggle('selected',i===idx));
+  document.getElementById('card-results').classList.remove('hidden');
+  document.getElementById('results-content').innerHTML='<div class="loader"></div> Running simulation...';
+  document.getElementById('api-verdict').innerHTML='<div class="loader"></div>';
+  setStep(4);
+  try{ await runSimulation(); }
+  catch(e){ document.getElementById('results-content').innerHTML=`<div class="error"><i class="ti ti-alert-circle"></i> ${esc(e.message)}</div>`; }
+}
+
+async function runSimulation(){
+  const league=state.selectedLeague;
+  const trade=state.selectedTrade;
+  const tradeWeek=trade.week;
+  const totWks=(league.settings?.playoff_week_start||14)-1;
+  const P=window._players||{};
+  const iGotIds=trade.adds?Object.entries(trade.adds).filter(([,rid])=>rid===state.myRosterId).map(([pid])=>pid):[];
+  const iGaveIds=trade.drops?Object.entries(trade.drops).filter(([,rid])=>rid===state.myRosterId).map(([pid])=>pid):[];
+
+  let actualWins=0,actualLosses=0,cfWins=0,cfLosses=0,actualPts=0,cfPts=0;
+  const weekData=[];
+
+  for(let w=tradeWeek;w<=totWks;w++){
+    const mu=await sleeper(`/league/${league.league_id}/matchups/${w}`);
+    const mine=mu.find(m=>m.roster_id===state.myRosterId);
+    if(!mine) continue;
+    const opp=mu.find(m=>m.matchup_id===mine.matchup_id&&m.roster_id!==state.myRosterId);
+    if(!opp) continue;
+    const myActual=mine.points||0;
+    const oppScore=opp.points||0;
+    const pp=mine.players_points||{};
+    let delta=0;
+    iGotIds.forEach(pid=>{delta-=(pp[pid]||0);});
+    iGaveIds.forEach(pid=>{delta+=((opp.players_points||{})[pid]||pp[pid]||0);});
+    const myCF=Math.max(0,myActual+delta);
+    actualPts+=myActual; cfPts+=myCF;
+    const aW=myActual>oppScore; const cfW=myCF>oppScore;
+    if(aW) actualWins++; else actualLosses++;
+    if(cfW) cfWins++; else cfLosses++;
+    weekData.push({w,myActual,myCF,oppScore,aW,cfW,delta});
+  }
+
+  let priorWins=0,priorLosses=0;
+  for(let w=1;w<tradeWeek;w++){
+    const mu=await sleeper(`/league/${league.league_id}/matchups/${w}`);
+    const mine=mu.find(m=>m.roster_id===state.myRosterId);
+    if(!mine) continue;
+    const opp=mu.find(m=>m.matchup_id===mine.matchup_id&&m.roster_id!==state.myRosterId);
+    if(!opp) continue;
+    if((mine.points||0)>(opp.points||0)) priorWins++; else priorLosses++;
+  }
+
+  const totalActualW=priorWins+actualWins, totalActualL=priorLosses+actualLosses;
+  const totalCFW=priorWins+cfWins, totalCFL=priorLosses+cfLosses;
+  const ptsDiff=(actualPts-cfPts).toFixed(1);
+  const outcome=actualWins>cfWins?'win':actualWins<cfWins?'loss':'neutral';
+
+  renderResults({totalActualW,totalActualL,totalCFW,totalCFL,actualWins,cfWins,actualLosses,cfLosses,actualPts,cfPts,ptsDiff,outcome,weekData,P,iGotIds,iGaveIds});
+
+  const gotNames=iGotIds.map(id=>P[id]?.full_name||id).join(', ')||'draft picks';
+  const gaveNames=iGaveIds.map(id=>P[id]?.full_name||id).join(', ')||'draft picks';
+  fetchVerdict({gotNames,gaveNames,tradeWeek:trade.week,totalActualW,totalActualL,totalCFW,totalCFL,ptsDiff,outcome,leagueName:league.name},'api-verdict');
+}
+
+function renderResults(d){
+  const {totalActualW,totalActualL,totalCFW,totalCFL,actualWins,cfWins,actualPts,cfPts,ptsDiff,outcome,weekData,P,iGotIds,iGaveIds}=d;
+  const maxPts=Math.max(...weekData.map(w=>Math.max(w.myActual,w.myCF,w.oppScore)),1);
+  const outcomeColor=outcome==='win'?'#86efac':outcome==='loss'?'#fca5a5':'#93c5fd';
+  const winDiff=actualWins-cfWins;
+  const diffStr=winDiff===0?'No change':`${Math.abs(winDiff)} ${Math.abs(winDiff)===1?'win':'wins'} ${winDiff>0?'gained':'lost'}`;
+  document.getElementById('results-content').innerHTML=`
+    <div class="vs-bar">
+      <div class="vs-side"><div class="vs-label">Actual (with trade)</div><div class="vs-record">${totalActualW}–${totalActualL}</div><div class="vs-pts">${actualPts.toFixed(1)} pts after trade</div></div>
+      <div class="vs-divider">vs</div>
+      <div class="vs-side"><div class="vs-label">What-if (no trade)</div><div class="vs-record" style="color:#93c5fd">${totalCFW}–${totalCFL}</div><div class="vs-pts">${cfPts.toFixed(1)} pts after trade</div></div>
+    </div>
+    <div class="result-grid">
+      <div class="metric"><div class="metric-label">Wins after trade (actual)</div><div class="metric-value">${actualWins}</div><div class="metric-sub">of ${weekData.length} matchups</div></div>
+      <div class="metric"><div class="metric-label">Wins after trade (no trade)</div><div class="metric-value" style="color:#93c5fd">${cfWins}</div><div class="metric-sub">of ${weekData.length} matchups</div></div>
+      <div class="metric"><div class="metric-label">Points gained / lost</div><div class="metric-value" style="color:${parseFloat(ptsDiff)>=0?'#86efac':'#fca5a5'}">${parseFloat(ptsDiff)>=0?'+':''}${ptsDiff}</div><div class="metric-sub">after trade week</div></div>
+      <div class="metric"><div class="metric-label">Trade impact</div><div class="metric-value" style="color:${outcomeColor};font-size:1.1rem">${diffStr}</div><div class="metric-sub">net W/L change</div></div>
+    </div>
+    <div style="font-size:.8rem;color:#8892a0;margin-bottom:.5rem">
+      <span style="display:inline-flex;align-items:center;gap:4px;margin-right:12px"><span style="width:10px;height:10px;background:#1e3a5f;border-radius:2px;display:inline-block"></span>Actual</span>
+      <span style="display:inline-flex;align-items:center;gap:4px;margin-right:12px"><span style="width:10px;height:10px;background:#14532d;border-radius:2px;display:inline-block"></span>What-if</span>
+      <span style="display:inline-flex;align-items:center;gap:4px"><span style="width:10px;height:10px;background:#4a1515;border-radius:2px;display:inline-block"></span>Would have lost more</span>
+    </div>
+    <div class="week-chart">
+      ${weekData.map(w=>{
+        const aW=Math.round(w.myActual/maxPts*200);
+        const cW=Math.round(w.myCF/maxPts*200);
+        return `<div class="week-row">
+          <span class="week-num">Week ${w.w}</span>
+          <div class="bar-wrap">
+            <div class="bar bar-actual" style="width:${aW}px">${w.myActual.toFixed(0)}</div>
+            <div class="bar ${w.myCF<w.myActual?'bar-worse':'bar-counterfactual'}" style="width:${cW}px">${w.myCF.toFixed(0)}</div>
+          </div>
+          <span class="${w.aW?'outcome-w':'outcome-l'}"><i class="ti ti-${w.aW?'circle-check':'circle-x'}"></i></span>
+        </div>`;
+      }).join('')}
+    </div>
+    <p style="font-size:.72rem;color:#4a5568;margin-top:.75rem">* What-if scores swap traded players' actual points back to your roster. Same lineup decisions assumed.</p>`;
+}
+
+async function fetchVerdict(d,targetId){
+  const {gotNames,gaveNames,tradeWeek,totalActualW,totalActualL,totalCFW,totalCFL,ptsDiff,outcome,leagueName}=d;
+  const prompt=`You are a fantasy football analyst. Briefly analyze this trade in 2-3 sentences:
+League: ${leagueName} | Trade: Week ${tradeWeek}
+Received: ${gotNames} | Gave: ${gaveNames}
+Actual record: ${totalActualW}–${totalActualL} | Without trade: ${totalCFW}–${totalCFL}
+Points differential: ${ptsDiff} | Impact: ${outcome}
+Start your verdict with 🟢 Trade won / 🔴 Trade lost / 🟡 Trade was a wash, then explain briefly.`;
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})
+    });
+    const data=await resp.json();
+    const text=data.content?.find(c=>c.type==='text')?.text||'Unable to generate verdict.';
+    document.getElementById(targetId).innerHTML=`<div style="line-height:1.7;font-size:.9rem">${esc(text).replace(/\n/g,'<br>')}</div>`;
+  }catch(e){
+    document.getElementById(targetId).innerHTML='<div class="error"><i class="ti ti-alert-circle"></i> Could not generate AI verdict.</div>';
+  }
+}
+
+function addPlayerRow(containerId,nameClass,ptsClass){
+  const el=document.getElementById(containerId);
+  const row=document.createElement('div');
+  row.className='player-input-row';
+  row.innerHTML=`<input type="text" placeholder="Player name" class="${nameClass}"/><input type="text" placeholder="Wk pts (comma sep)" class="${ptsClass}" style="max-width:160px"/><button onclick="this.parentElement.remove()" style="background:none;border:none;color:#4a5568;cursor:pointer;padding:4px"><i class="ti ti-trash"></i></button>`;
+  el.appendChild(row);
+}
+
+function runManualSim(){
+  const totalWeeks=parseInt(document.getElementById('manual-total-weeks').value)||14;
+  const tradeWeek=parseInt(document.getElementById('manual-trade-week').value)||5;
+  const teamScores=document.getElementById('manual-team-scores').value.split(',').map(Number).filter(n=>!isNaN(n));
+  const oppScores=document.getElementById('manual-opp-scores').value.split(',').map(Number).filter(n=>!isNaN(n));
+  const recNames=[...document.querySelectorAll('.rec-name')].map(i=>i.value.trim()).filter(Boolean);
+  const recPts=[...document.querySelectorAll('.rec-pts')].map(i=>i.value.split(',').map(Number).filter(n=>!isNaN(n)));
+  const gaveNames=[...document.querySelectorAll('.gave-name')].map(i=>i.value.trim()).filter(Boolean);
+  const gavePts=[...document.querySelectorAll('.gave-pts')].map(i=>i.value.split(',').map(Number).filter(n=>!isNaN(n)));
+  const weeksAfter=totalWeeks-tradeWeek+1;
+  if(teamScores.length<weeksAfter||oppScores.length<weeksAfter){showError('manual-error','Please provide weekly scores for all weeks after the trade.');return;}
+  hideError('manual-error');
+  let aW=0,aL=0,cfW=0,cfL=0,aPts=0,cfPts=0;
+  const weekData=[];
+  for(let i=0;i<weeksAfter;i++){
+    const my=teamScores[i]||0,opp=oppScores[i]||0;
+    let delta=0;
+    recPts.forEach(pts=>{delta-=(pts[i]||0);});
+    gavePts.forEach(pts=>{delta+=(pts[i]||0);});
+    const myCF=Math.max(0,my+delta);
+    aPts+=my;cfPts+=myCF;
+    if(my>opp)aW++;else aL++;
+    if(myCF>opp)cfW++;else cfL++;
+    weekData.push({w:tradeWeek+i,myActual:my,myCF,oppScore:opp,aW:my>opp,cfW:myCF>opp,delta});
+  }
+  const ptsDiff=(aPts-cfPts).toFixed(1);
+  const outcome=aW>cfW?'win':aW<cfW?'loss':'neutral';
+  document.getElementById('manual-results').classList.remove('hidden');
+  renderResults({totalActualW:aW,totalActualL:aL,totalCFW:cfW,totalCFL:cfL,actualWins:aW,cfWins:cfW,actualLosses:aL,cfLosses:cfL,actualPts:aPts,cfPts,ptsDiff,outcome,weekData,P:{},iGotIds:[],iGaveIds:[]});
+  document.getElementById('manual-results-content').innerHTML=document.getElementById('results-content').innerHTML;
+  document.getElementById('manual-api-verdict').innerHTML='<div class="loader"></div>';
+  fetchVerdict({gotNames:recNames.join(', ')||'received players',gaveNames:gaveNames.join(', ')||'given players',tradeWeek,totalActualW:aW,totalActualL:aL,totalCFW:cfW,totalCFL:cfL,ptsDiff,outcome,leagueName:'your league'},'manual-api-verdict');
+}
+
+function resetToTrades(){document.getElementById('card-results').classList.add('hidden');setStep(3);}
+function showError(id,msg){const el=document.getElementById(id);el.classList.remove('hidden');el.querySelector('span').textContent=msg;}
+function hideError(id){document.getElementById(id).classList.add('hidden');}
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+</script>
+</body>
+</html>
