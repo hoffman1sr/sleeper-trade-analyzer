@@ -329,7 +329,6 @@ async function selectTrade(idx){
   document.querySelectorAll('.trade-card').forEach((el,i)=>el.classList.toggle('selected',i===idx));
   document.getElementById('card-results').classList.remove('hidden');
   document.getElementById('results-content').innerHTML='<div class="loader"></div> Running simulation...';
-  document.getElementById('api-verdict').innerHTML='<div class="loader"></div>';
   setStep(4);
   try{ await runSimulation(); }
   catch(e){ document.getElementById('results-content').innerHTML=`<div class="error"><i class="ti ti-alert-circle"></i> ${esc(e.message)}</div>`; }
@@ -383,10 +382,6 @@ async function runSimulation(){
   const outcome=actualWins>cfWins?'win':actualWins<cfWins?'loss':'neutral';
 
   renderResults({totalActualW,totalActualL,totalCFW,totalCFL,actualWins,cfWins,actualLosses,cfLosses,actualPts,cfPts,ptsDiff,outcome,weekData,P,iGotIds,iGaveIds});
-
-  const gotNames=iGotIds.map(id=>P[id]?.full_name||id).join(', ')||'draft picks';
-  const gaveNames=iGaveIds.map(id=>P[id]?.full_name||id).join(', ')||'draft picks';
-  fetchVerdict({gotNames,gaveNames,tradeWeek:trade.week,totalActualW,totalActualL,totalCFW,totalCFL,ptsDiff,outcome,leagueName:league.name},'api-verdict');
 }
 
 function renderResults(d){
@@ -488,8 +483,6 @@ function runManualSim(){
   document.getElementById('manual-results').classList.remove('hidden');
   renderResults({totalActualW:aW,totalActualL:aL,totalCFW:cfW,totalCFL:cfL,actualWins:aW,cfWins:cfW,actualLosses:aL,cfLosses:cfL,actualPts:aPts,cfPts,ptsDiff,outcome,weekData,P:{},iGotIds:[],iGaveIds:[]});
   document.getElementById('manual-results-content').innerHTML=document.getElementById('results-content').innerHTML;
-  document.getElementById('manual-api-verdict').innerHTML='<div class="loader"></div>';
-  fetchVerdict({gotNames:recNames.join(', ')||'received players',gaveNames:gaveNames.join(', ')||'given players',tradeWeek,totalActualW:aW,totalActualL:aL,totalCFW:cfW,totalCFL:cfL,ptsDiff,outcome,leagueName:'your league'},'manual-api-verdict');
 }
 
 function resetToTrades(){document.getElementById('card-results').classList.add('hidden');setStep(3);}
