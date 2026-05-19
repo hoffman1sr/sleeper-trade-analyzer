@@ -8,7 +8,7 @@
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0f1318;color:#e8eaf0;min-height:100vh}
-  .app{max-width:900px;margin:0 auto;padding:2rem 1rem}
+  .app{max-width:960px;margin:0 auto;padding:2rem 1rem}
   h1{font-size:1.6rem;font-weight:600;color:#fff;display:flex;align-items:center;gap:.5rem}
   h1 span.tag{font-size:.75rem;background:#1e3a5f;color:#60a5fa;padding:3px 10px;border-radius:20px;font-weight:500}
   .subtitle{color:#8892a0;font-size:.9rem;margin:.4rem 0 2rem}
@@ -16,19 +16,16 @@
   .tab{padding:7px 18px;border-radius:7px;font-size:.85rem;cursor:pointer;color:#8892a0;border:none;background:none;transition:all .15s}
   .tab.active{background:#2a3142;color:#fff;font-weight:500}
   .card{background:#1a1f2a;border:1px solid #2a3142;border-radius:12px;padding:1.5rem;margin-bottom:1.25rem}
-  .card-title{font-size:.8rem;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:#60a5fa;margin-bottom:1rem}
+  .card-title{font-size:.8rem;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:#60a5fa;margin-bottom:1rem;display:flex;align-items:center;gap:6px}
   .form-row{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}
   .form-group{display:flex;flex-direction:column;gap:6px;flex:1;min-width:180px}
   label{font-size:.82rem;color:#8892a0}
   input,select{background:#0f1318;border:1px solid #2a3142;border-radius:8px;padding:9px 12px;color:#e8eaf0;font-size:.9rem;outline:none;width:100%}
   input:focus,select:focus{border-color:#3b82f6}
-  select option{background:#1a1f2a}
   .btn{padding:9px 20px;border-radius:8px;font-size:.88rem;font-weight:500;cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
-  .btn-primary{background:#3b82f6;color:#fff}
-  .btn-primary:hover{background:#2563eb}
+  .btn-primary{background:#3b82f6;color:#fff}.btn-primary:hover{background:#2563eb}
   .btn-primary:disabled{background:#1e3a5f;color:#4a5568;cursor:not-allowed}
-  .btn-ghost{background:transparent;color:#8892a0;border:1px solid #2a3142}
-  .btn-ghost:hover{background:#2a3142;color:#fff}
+  .btn-ghost{background:transparent;color:#8892a0;border:1px solid #2a3142}.btn-ghost:hover{background:#2a3142;color:#fff}
   .loader{display:inline-block;width:16px;height:16px;border:2px solid #3b82f6;border-top-color:transparent;border-radius:50%;animation:spin .6s linear infinite}
   @keyframes spin{to{transform:rotate(360deg)}}
   .league-item{display:flex;align-items:center;justify-content:space-between;padding:12px;background:#0f1318;border-radius:8px;margin-bottom:8px;cursor:pointer;border:1px solid transparent;transition:all .15s}
@@ -46,6 +43,7 @@
   .trade-arrow{color:#4a5568;font-size:1.2rem;text-align:center}
   .player-name{font-weight:500;font-size:.88rem}
   .result-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.25rem}
+  .result-grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1.25rem}
   .metric{background:#0f1318;border-radius:10px;padding:1rem;text-align:center}
   .metric-label{font-size:.75rem;color:#8892a0;margin-bottom:6px}
   .metric-value{font-size:1.5rem;font-weight:600}
@@ -56,12 +54,11 @@
   .vs-record{font-size:1.2rem;font-weight:600}
   .vs-pts{font-size:.78rem;color:#8892a0}
   .vs-divider{text-align:center;font-size:.85rem;color:#4a5568;font-weight:500}
-  .verdict{border-radius:10px;padding:1rem 1.25rem;margin-top:1rem;line-height:1.6;font-size:.88rem}
   .week-chart{margin-top:1.25rem}
   .week-row{display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:.78rem}
   .week-num{width:52px;color:#8892a0;flex-shrink:0}
   .bar-wrap{flex:1;display:flex;gap:4px}
-  .bar{height:18px;border-radius:3px;min-width:3px;position:relative;display:flex;align-items:center;padding:0 5px;font-size:.7rem;font-weight:500;overflow:hidden;white-space:nowrap}
+  .bar{height:18px;border-radius:3px;min-width:3px;display:flex;align-items:center;padding:0 5px;font-size:.7rem;font-weight:500;overflow:hidden;white-space:nowrap}
   .bar-actual{background:#1e3a5f;color:#93c5fd}
   .bar-counterfactual{background:#14532d;color:#86efac}
   .bar-worse{background:#4a1515;color:#fca5a5}
@@ -69,8 +66,7 @@
   .outcome-l{color:#fca5a5;width:14px;flex-shrink:0}
   .steps{display:flex;align-items:center;gap:8px;margin-bottom:2rem;flex-wrap:wrap}
   .step{font-size:.8rem;color:#4a5568;display:flex;align-items:center;gap:6px}
-  .step.active{color:#fff}
-  .step.done{color:#3b82f6}
+  .step.active{color:#fff}.step.done{color:#3b82f6}
   .step-num{width:22px;height:22px;border-radius:50%;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:.72rem;flex-shrink:0}
   .step-sep{color:#2a3142;font-size:.9rem}
   .manual-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
@@ -82,6 +78,29 @@
   .info-box{background:#1e2d45;border:1px solid #1e3a5f;border-radius:8px;padding:.85rem 1rem;font-size:.82rem;color:#93c5fd;margin-bottom:1rem;display:flex;gap:8px}
   .section-divider{border:none;border-top:1px solid #2a3142;margin:1.25rem 0}
   .hidden{display:none!important}
+
+  /* Playoff section */
+  .playoff-banner{border-radius:10px;padding:1rem 1.25rem;margin-bottom:1rem;display:flex;align-items:center;gap:12px;font-size:.9rem}
+  .playoff-banner.in{background:#0d2b1a;border:1px solid #166534}
+  .playoff-banner.out{background:#2a0d0d;border:1px solid #7f1d1d}
+  .playoff-banner.neutral{background:#1e2d45;border:1px solid #1e3a5f}
+  .playoff-banner .icon{font-size:1.4rem}
+  .playoff-banner .title{font-weight:600;margin-bottom:2px}
+  .playoff-banner .sub{font-size:.78rem;color:#8892a0}
+  .standings-table{width:100%;border-collapse:collapse;font-size:.82rem;margin-top:.5rem}
+  .standings-table th{color:#8892a0;font-weight:500;text-align:left;padding:6px 8px;border-bottom:1px solid #2a3142}
+  .standings-table td{padding:7px 8px;border-bottom:1px solid #1a1f2a}
+  .standings-table tr.me-actual td{background:#1e2d45}
+  .standings-table tr.me-cf td{background:#1a2e1a}
+  .standings-table tr.playoff-line td{border-bottom:2px dashed #3b82f6}
+  .seed-badge{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;font-size:.7rem;font-weight:600}
+  .seed-in{background:#14532d;color:#86efac}
+  .seed-out{background:#2a0d0d;color:#fca5a5}
+  .change-up{color:#86efac;font-size:.75rem}
+  .change-down{color:#fca5a5;font-size:.75rem}
+  .change-same{color:#8892a0;font-size:.75rem}
+  .section-label{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#4a5568;margin:1rem 0 .5rem}
+  @media(max-width:600px){.result-grid-4{grid-template-columns:1fr 1fr}.result-grid{grid-template-columns:1fr 1fr}.manual-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -94,6 +113,7 @@
     <button class="tab" onclick="switchTab('manual')"><i class="ti ti-pencil"></i> Manual Entry</button>
   </div>
 
+  <!-- FETCH TAB -->
   <div id="tab-fetch">
     <div class="steps">
       <div class="step done" id="step1"><div class="step-num"><i class="ti ti-check" style="font-size:.65rem"></i></div> Username</div>
@@ -130,13 +150,18 @@
 
     <div id="card-results" class="hidden">
       <div class="card">
-        <div class="card-title"><i class="ti ti-chart-bar"></i> Simulation results</div>
+        <div class="card-title"><i class="ti ti-chart-bar"></i> Season record impact</div>
         <div id="results-content"></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="ti ti-tournament"></i> Playoff &amp; standings impact</div>
+        <div id="playoff-content"></div>
       </div>
       <button class="btn btn-ghost" style="margin-top:.5rem" onclick="resetToTrades()"><i class="ti ti-arrow-left"></i> Analyze another trade</button>
     </div>
   </div>
 
+  <!-- MANUAL TAB -->
   <div id="tab-manual" class="hidden">
     <div class="card">
       <div class="card-title"><i class="ti ti-pencil"></i> Trade details</div>
@@ -160,8 +185,8 @@
       <hr class="section-divider"/>
       <div class="form-row" style="flex-wrap:wrap">
         <div class="form-group" style="max-width:200px">
-          <label>Total weeks in season</label>
-          <input type="number" id="manual-total-weeks" value="14" min="1" max="18"/>
+          <label>Total regular season weeks</label>
+          <input type="number" id="manual-total-weeks" value="13" min="1" max="18"/>
         </div>
         <div class="form-group" style="max-width:200px">
           <label>Trade happened after week</label>
@@ -175,23 +200,34 @@
           <label>Opponent scores each week</label>
           <input type="text" id="manual-opp-scores" placeholder="e.g. 100,115,88,..."/>
         </div>
+        <div class="form-group" style="max-width:200px">
+          <label>Playoff spots in league</label>
+          <input type="number" id="manual-playoff-spots" value="6" min="2" max="10"/>
+        </div>
+        <div class="form-group" style="max-width:200px">
+          <label>Total teams in league</label>
+          <input type="number" id="manual-total-teams" value="12" min="4" max="20"/>
+        </div>
       </div>
       <button class="btn btn-primary" style="margin-top:1rem" onclick="runManualSim()"><i class="ti ti-player-play"></i> Run simulation</button>
       <div id="manual-error" class="error hidden"><i class="ti ti-alert-circle"></i> <span></span></div>
     </div>
     <div id="manual-results" class="hidden">
       <div class="card">
-        <div class="card-title"><i class="ti ti-chart-bar"></i> Simulation results</div>
+        <div class="card-title"><i class="ti ti-chart-bar"></i> Season record impact</div>
         <div id="manual-results-content"></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="ti ti-tournament"></i> Playoff &amp; standings impact</div>
+        <div id="manual-playoff-content"></div>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-// *** KEY CHANGE: all API calls go through /api/sleeper proxy instead of directly to Sleeper ***
-const PROXY = '/api/sleeper';
-let state = { userId:null, leagues:[], selectedLeague:null, selectedTrade:null, rosterMap:{}, myRosterId:null };
+const PROXY='/api/sleeper';
+let state={userId:null,leagues:[],selectedLeague:null,selectedTrade:null,rosterMap:{},myRosterId:null};
 
 function switchTab(t){
   document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',i===(t==='fetch'?0:1)));
@@ -210,7 +246,7 @@ function setStep(n){
 }
 
 async function sleeper(path){
-  const r = await fetch(`${PROXY}${path}`);
+  const r=await fetch(`${PROXY}${path}`);
   if(!r.ok) throw new Error(`API error ${r.status} for ${path}`);
   return r.json();
 }
@@ -222,35 +258,27 @@ async function fetchLeagues(){
   btn.disabled=true;btn.innerHTML='<span class="loader"></span> Loading...';
   hideError('fetch-error');
   try{
-    const user = await sleeper(`/user/${un}`).catch(()=>{throw new Error(`User "${un}" not found. Check spelling — usernames are case-sensitive.`);});
+    const user=await sleeper(`/user/${un}`).catch(()=>{throw new Error(`User "${un}" not found. Usernames are case-sensitive.`);});
     state.userId=user.user_id;
-    const currentYear=new Date().getFullYear();
-const seasons=Array.from({length:6},(_,i)=>String(currentYear-i));
+    const cur=new Date().getFullYear();
+    const seasons=Array.from({length:6},(_,i)=>String(cur-i));
     let all=[];
     for(const s of seasons){
-      try{
-        const ls=await sleeper(`/user/${user.user_id}/leagues/nfl/${s}`);
-        if(ls&&ls.length) all.push(...ls.map(l=>({...l,season:s})));
-      }catch(e){}
+      try{const ls=await sleeper(`/user/${user.user_id}/leagues/nfl/${s}`);if(ls&&ls.length)all.push(...ls.map(l=>({...l,season:s})));}catch(e){}
     }
     if(!all.length) throw new Error('No leagues found for this user.');
     state.leagues=all;
     renderLeagues(all);
     document.getElementById('card-leagues').classList.remove('hidden');
     setStep(2);
-  }catch(e){
-    showError('fetch-error',e.message||'Failed to fetch. Check username and try again.');
-  }
+  }catch(e){showError('fetch-error',e.message);}
   btn.disabled=false;btn.innerHTML='<i class="ti ti-search"></i> Find leagues';
 }
 
 function renderLeagues(leagues){
   document.getElementById('leagues-list').innerHTML=leagues.map((l,i)=>`
     <div class="league-item" onclick="selectLeague(${i})">
-      <div>
-        <div class="league-name">${esc(l.name)}</div>
-        <div class="league-meta">${l.season} season · ${l.total_rosters} teams</div>
-      </div>
+      <div><div class="league-name">${esc(l.name)}</div><div class="league-meta">${l.season} season · ${l.total_rosters} teams</div></div>
       <i class="ti ti-chevron-right" style="color:#4a5568"></i>
     </div>`).join('');
 }
@@ -273,18 +301,11 @@ async function selectLeague(idx){
     const myRoster=ros.find(r=>r.owner_id===state.userId);
     if(!myRoster) throw new Error("Couldn't find your roster in this league.");
     state.myRosterId=myRoster.roster_id;
-
-    if(!window._players){
-      window._players=await sleeper('/players/nfl').catch(()=>({}));
-    }
-
+    if(!window._players) window._players=await sleeper('/players/nfl').catch(()=>({}));
     const totWks=state.selectedLeague.settings?.playoff_week_start||14;
     const txAll=[];
     for(let w=1;w<=totWks;w++){
-      try{
-        const tx=await sleeper(`/league/${state.selectedLeague.league_id}/transactions/${w}`);
-        if(tx&&tx.length) txAll.push(...tx.map(t=>({...t,week:w})));
-      }catch(e){}
+      try{const tx=await sleeper(`/league/${state.selectedLeague.league_id}/transactions/${w}`);if(tx&&tx.length)txAll.push(...tx.map(t=>({...t,week:w})));}catch(e){}
     }
     const myTrades=txAll.filter(t=>t.type==='trade'&&t.roster_ids?.includes(state.myRosterId));
     state.transactions=myTrades;
@@ -299,7 +320,7 @@ function renderTrades(trades){
   const el=document.getElementById('card-trades');
   const P=window._players||{};
   if(!trades.length){
-    el.innerHTML='<div class="card-title"><i class="ti ti-arrows-exchange"></i> No trades found</div><p style="color:#8892a0;font-size:.88rem">No trades were found for your team in this league.</p>';
+    el.innerHTML='<div class="card-title"><i class="ti ti-arrows-exchange"></i> No trades found</div><p style="color:#8892a0;font-size:.88rem">No trades found for your team in this league.</p>';
     return;
   }
   el.innerHTML='<div class="card-title"><i class="ti ti-arrows-exchange"></i> Select a trade to analyze</div>'+
@@ -307,14 +328,11 @@ function renderTrades(trades){
     trades.map((t,i)=>{
       const myIdx=t.roster_ids.indexOf(state.myRosterId);
       const theirIdx=myIdx===0?1:0;
-      const iGot=(t.adds?Object.entries(t.adds).filter(([,rid])=>rid===state.myRosterId).map(([pid])=>P[pid]?.full_name||pid):[]);
-      const iGave=(t.drops?Object.entries(t.drops).filter(([,rid])=>rid===state.myRosterId).map(([pid])=>P[pid]?.full_name||pid):[]);
+      const iGot=t.adds?Object.entries(t.adds).filter(([,rid])=>rid===state.myRosterId).map(([pid])=>P[pid]?.full_name||pid):[];
+      const iGave=t.drops?Object.entries(t.drops).filter(([,rid])=>rid===state.myRosterId).map(([pid])=>P[pid]?.full_name||pid):[];
       const oppName=state.rosterMap[t.roster_ids[theirIdx]]?.displayName||'Opponent';
       return `<div class="trade-card" onclick="selectTrade(${i})">
-        <div class="trade-header">
-          <span style="font-size:.85rem;font-weight:500">vs ${esc(oppName)}</span>
-          <span class="badge badge-neutral">Week ${t.week}</span>
-        </div>
+        <div class="trade-header"><span style="font-size:.85rem;font-weight:500">vs ${esc(oppName)}</span><span class="badge badge-neutral">Week ${t.week}</span></div>
         <div class="trade-players">
           <div class="trade-side"><div class="got">You received</div>${iGot.map(p=>`<div class="player-name">${esc(p)}</div>`).join('')||'<div style="color:#4a5568;font-size:.78rem">picks/other</div>'}</div>
           <div class="trade-arrow"><i class="ti ti-arrows-exchange"></i></div>
@@ -328,79 +346,143 @@ async function selectTrade(idx){
   state.selectedTrade=state.transactions[idx];
   document.querySelectorAll('.trade-card').forEach((el,i)=>el.classList.toggle('selected',i===idx));
   document.getElementById('card-results').classList.remove('hidden');
-  document.getElementById('results-content').innerHTML='<div class="loader"></div> Running simulation...';
+  document.getElementById('results-content').innerHTML='<div style="display:flex;align-items:center;gap:10px"><div class="loader"></div> Running simulation — fetching all team data...</div>';
+  document.getElementById('playoff-content').innerHTML='';
   setStep(4);
-  try{ await runSimulation(); }
-  catch(e){ document.getElementById('results-content').innerHTML=`<div class="error"><i class="ti ti-alert-circle"></i> ${esc(e.message)}</div>`; }
+  try{await runSimulation();}
+  catch(e){document.getElementById('results-content').innerHTML=`<div class="error"><i class="ti ti-alert-circle"></i> ${esc(e.message)}</div>`;}
 }
 
 async function runSimulation(){
   const league=state.selectedLeague;
   const trade=state.selectedTrade;
   const tradeWeek=trade.week;
-  const totWks=(league.settings?.playoff_week_start||14)-1;
+  const playoffStart=league.settings?.playoff_week_start||14;
+  const totRegWks=playoffStart-1;
+  const playoffSpots=league.settings?.playoff_teams||4;
   const P=window._players||{};
   const iGotIds=trade.adds?Object.entries(trade.adds).filter(([,rid])=>rid===state.myRosterId).map(([pid])=>pid):[];
   const iGaveIds=trade.drops?Object.entries(trade.drops).filter(([,rid])=>rid===state.myRosterId).map(([pid])=>pid):[];
 
-  let actualWins=0,actualLosses=0,cfWins=0,cfLosses=0,actualPts=0,cfPts=0;
-  const weekData=[];
-
-  for(let w=tradeWeek;w<=totWks;w++){
-    const mu=await sleeper(`/league/${league.league_id}/matchups/${w}`);
-    const mine=mu.find(m=>m.roster_id===state.myRosterId);
-    if(!mine) continue;
-    const opp=mu.find(m=>m.matchup_id===mine.matchup_id&&m.roster_id!==state.myRosterId);
-    if(!opp) continue;
-    const myActual=mine.points||0;
-    const oppScore=opp.points||0;
-    const pp=mine.players_points||{};
-    let delta=0;
-    iGotIds.forEach(pid=>{delta-=(pp[pid]||0);});
-    iGaveIds.forEach(pid=>{delta+=((opp.players_points||{})[pid]||pp[pid]||0);});
-    const myCF=Math.max(0,myActual+delta);
-    actualPts+=myActual; cfPts+=myCF;
-    const aW=myActual>oppScore; const cfW=myCF>oppScore;
-    if(aW) actualWins++; else actualLosses++;
-    if(cfW) cfWins++; else cfLosses++;
-    weekData.push({w,myActual,myCF,oppScore,aW,cfW,delta});
+  // Fetch all regular season matchups for all teams
+  const allMatchups={};
+  for(let w=1;w<=totRegWks;w++){
+    allMatchups[w]=await sleeper(`/league/${league.league_id}/matchups/${w}`);
   }
 
-  let priorWins=0,priorLosses=0;
-  for(let w=1;w<tradeWeek;w++){
-    const mu=await sleeper(`/league/${league.league_id}/matchups/${w}`);
-    const mine=mu.find(m=>m.roster_id===state.myRosterId);
-    if(!mine) continue;
-    const opp=mu.find(m=>m.matchup_id===mine.matchup_id&&m.roster_id!==state.myRosterId);
-    if(!opp) continue;
-    if((mine.points||0)>(opp.points||0)) priorWins++; else priorLosses++;
+  // Build per-team actual records and points
+  const rosterIds=Object.keys(state.rosterMap).map(Number);
+  const teamStats={};
+  rosterIds.forEach(rid=>{teamStats[rid]={wins:0,losses:0,pts:0,cfWins:0,cfLosses:0,cfPts:0};});
+
+  // Track my week-by-week data for chart
+  let myWeekData=[];
+
+  for(let w=1;w<=totRegWks;w++){
+    const mu=allMatchups[w];
+    // Build matchup pairs
+    const pairs={};
+    mu.forEach(m=>{
+      if(!pairs[m.matchup_id]) pairs[m.matchup_id]=[];
+      pairs[m.matchup_id].push(m);
+    });
+    Object.values(pairs).forEach(pair=>{
+      if(pair.length!==2) return;
+      const [a,b]=pair;
+      const aPts=a.points||0, bPts=b.points||0;
+
+      // Actual
+      if(aPts>bPts){teamStats[a.roster_id].wins++;teamStats[b.roster_id].losses++;}
+      else{teamStats[b.roster_id].wins++;teamStats[a.roster_id].losses++;}
+      teamStats[a.roster_id].pts+=aPts;
+      teamStats[b.roster_id].pts+=bPts;
+
+      // Counterfactual: only my score changes
+      let myActual=null,oppScore=null,myRid=null,oppRid=null,myMatchup=null,oppMatchup=null;
+      if(a.roster_id===state.myRosterId){myActual=aPts;oppScore=bPts;myRid=a.roster_id;oppRid=b.roster_id;myMatchup=a;oppMatchup=b;}
+      else if(b.roster_id===state.myRosterId){myActual=bPts;oppScore=aPts;myRid=b.roster_id;oppRid=a.roster_id;myMatchup=b;oppMatchup=a;}
+
+      if(myRid!==null&&w>=tradeWeek){
+        const pp=myMatchup.players_points||{};
+        let delta=0;
+        iGotIds.forEach(pid=>{delta-=(pp[pid]||0);});
+        iGaveIds.forEach(pid=>{delta+=((oppMatchup.players_points||{})[pid]||pp[pid]||0);});
+        const myCF=Math.max(0,myActual+delta);
+
+        // CF wins/losses
+        if(myCF>oppScore){teamStats[myRid].cfWins++;teamStats[oppRid].cfLosses++;}
+        else{teamStats[myRid].cfLosses++;teamStats[oppRid].cfWins++;}
+        teamStats[myRid].cfPts+=myCF;
+        teamStats[oppRid].cfPts+=oppScore;
+
+        myWeekData.push({w,myActual,myCF,oppScore,aW:myActual>oppScore,cfW:myCF>oppScore,delta});
+      } else {
+        // Weeks before trade: CF same as actual for everyone
+        if(aPts>bPts){teamStats[a.roster_id].cfWins++;teamStats[b.roster_id].cfLosses++;}
+        else{teamStats[b.roster_id].cfWins++;teamStats[a.roster_id].cfLosses++;}
+        teamStats[a.roster_id].cfPts+=aPts;
+        teamStats[b.roster_id].cfPts+=bPts;
+
+        if(myRid!==null) myWeekData.push({w,myActual,myCF:myActual,oppScore,aW:myActual>oppScore,cfW:myActual>oppScore,delta:0});
+      }
+    });
   }
 
-  const totalActualW=priorWins+actualWins, totalActualL=priorLosses+actualLosses;
-  const totalCFW=priorWins+cfWins, totalCFL=priorLosses+cfLosses;
+  // Build standings: sort by wins desc, then pts desc
+  const sortStandings=(usesCF)=>{
+    return rosterIds.map(rid=>{
+      const s=teamStats[rid];
+      return{
+        rid,
+        name:state.rosterMap[rid]?.displayName||`Team ${rid}`,
+        wins:usesCF?s.cfWins:s.wins,
+        losses:usesCF?s.cfLosses:s.losses,
+        pts:usesCF?s.cfPts:s.pts,
+        isMe:rid===state.myRosterId
+      };
+    }).sort((a,b)=>b.wins-a.wins||b.pts-a.pts);
+  };
+
+  const actualStandings=sortStandings(false);
+  const cfStandings=sortStandings(true);
+
+  const myActualRank=actualStandings.findIndex(t=>t.isMe)+1;
+  const myCFRank=cfStandings.findIndex(t=>t.isMe)+1;
+  const myActualIn=myActualRank<=playoffSpots;
+  const myCFIn=myCFRank<=playoffSpots;
+
+  // Summary stats for my team
+  const myStats=teamStats[state.myRosterId];
+  const totalActualW=myStats.wins, totalActualL=myStats.losses;
+  const totalCFW=myStats.cfWins, totalCFL=myStats.cfLosses;
+  const actualPts=myStats.pts, cfPts=myStats.cfPts;
   const ptsDiff=(actualPts-cfPts).toFixed(1);
-  const outcome=actualWins>cfWins?'win':actualWins<cfWins?'loss':'neutral';
+  const outcome=totalActualW>totalCFW?'win':totalActualW<totalCFW?'loss':'neutral';
 
-  renderResults({totalActualW,totalActualL,totalCFW,totalCFL,actualWins,cfWins,actualLosses,cfLosses,actualPts,cfPts,ptsDiff,outcome,weekData,P,iGotIds,iGaveIds});
+  // Only show weeks after trade for chart highlight, but pass all weeks
+  renderResults({totalActualW,totalActualL,totalCFW,totalCFL,actualPts,cfPts,ptsDiff,outcome,
+    weekData:myWeekData,tradeWeek});
+  renderPlayoffImpact({actualStandings,cfStandings,myActualRank,myCFRank,myActualIn,myCFIn,
+    playoffSpots,ptsDiff,actualPts,cfPts},'playoff-content');
 }
 
 function renderResults(d){
-  const {totalActualW,totalActualL,totalCFW,totalCFL,actualWins,cfWins,actualPts,cfPts,ptsDiff,outcome,weekData,P,iGotIds,iGaveIds}=d;
+  const{totalActualW,totalActualL,totalCFW,totalCFL,actualPts,cfPts,ptsDiff,outcome,weekData,tradeWeek}=d;
   const maxPts=Math.max(...weekData.map(w=>Math.max(w.myActual,w.myCF,w.oppScore)),1);
   const outcomeColor=outcome==='win'?'#86efac':outcome==='loss'?'#fca5a5':'#93c5fd';
-  const winDiff=actualWins-cfWins;
+  const winDiff=totalActualW-totalCFW;
   const diffStr=winDiff===0?'No change':`${Math.abs(winDiff)} ${Math.abs(winDiff)===1?'win':'wins'} ${winDiff>0?'gained':'lost'}`;
   document.getElementById('results-content').innerHTML=`
     <div class="vs-bar">
-      <div class="vs-side"><div class="vs-label">Actual (with trade)</div><div class="vs-record">${totalActualW}–${totalActualL}</div><div class="vs-pts">${actualPts.toFixed(1)} pts after trade</div></div>
+      <div class="vs-side"><div class="vs-label">Actual (with trade)</div><div class="vs-record">${totalActualW}–${totalActualL}</div><div class="vs-pts">${actualPts.toFixed(1)} pts total</div></div>
       <div class="vs-divider">vs</div>
-      <div class="vs-side"><div class="vs-label">What-if (no trade)</div><div class="vs-record" style="color:#93c5fd">${totalCFW}–${totalCFL}</div><div class="vs-pts">${cfPts.toFixed(1)} pts after trade</div></div>
+      <div class="vs-side"><div class="vs-label">What-if (no trade)</div><div class="vs-record" style="color:#93c5fd">${totalCFW}–${totalCFL}</div><div class="vs-pts">${cfPts.toFixed(1)} pts total</div></div>
     </div>
-    <div class="result-grid">
-      <div class="metric"><div class="metric-label">Wins after trade (actual)</div><div class="metric-value">${actualWins}</div><div class="metric-sub">of ${weekData.length} matchups</div></div>
-      <div class="metric"><div class="metric-label">Wins after trade (no trade)</div><div class="metric-value" style="color:#93c5fd">${cfWins}</div><div class="metric-sub">of ${weekData.length} matchups</div></div>
-      <div class="metric"><div class="metric-label">Points gained / lost</div><div class="metric-value" style="color:${parseFloat(ptsDiff)>=0?'#86efac':'#fca5a5'}">${parseFloat(ptsDiff)>=0?'+':''}${ptsDiff}</div><div class="metric-sub">after trade week</div></div>
-      <div class="metric"><div class="metric-label">Trade impact</div><div class="metric-value" style="color:${outcomeColor};font-size:1.1rem">${diffStr}</div><div class="metric-sub">net W/L change</div></div>
+    <div class="result-grid-4">
+      <div class="metric"><div class="metric-label">Actual wins</div><div class="metric-value">${totalActualW}</div><div class="metric-sub">full season</div></div>
+      <div class="metric"><div class="metric-label">What-if wins</div><div class="metric-value" style="color:#93c5fd">${totalCFW}</div><div class="metric-sub">full season</div></div>
+      <div class="metric"><div class="metric-label">Points impact</div><div class="metric-value" style="color:${parseFloat(ptsDiff)>=0?'#86efac':'#fca5a5'}">${parseFloat(ptsDiff)>=0?'+':''}${ptsDiff}</div><div class="metric-sub">pts gained/lost</div></div>
+      <div class="metric"><div class="metric-label">Net impact</div><div class="metric-value" style="color:${outcomeColor};font-size:1rem">${diffStr}</div><div class="metric-sub">W/L change</div></div>
     </div>
     <div style="font-size:.8rem;color:#8892a0;margin-bottom:.5rem">
       <span style="display:inline-flex;align-items:center;gap:4px;margin-right:12px"><span style="width:10px;height:10px;background:#1e3a5f;border-radius:2px;display:inline-block"></span>Actual</span>
@@ -411,38 +493,148 @@ function renderResults(d){
       ${weekData.map(w=>{
         const aW=Math.round(w.myActual/maxPts*200);
         const cW=Math.round(w.myCF/maxPts*200);
-        return `<div class="week-row">
-          <span class="week-num">Week ${w.w}</span>
+        const isAfter=w.w>=tradeWeek;
+        return `<div class="week-row" style="${!isAfter?'opacity:.45':''}">
+          <span class="week-num">Wk ${w.w}${!isAfter?' <span style="color:#4a5568;font-size:.65rem">(pre)</span>':''}</span>
           <div class="bar-wrap">
             <div class="bar bar-actual" style="width:${aW}px">${w.myActual.toFixed(0)}</div>
-            <div class="bar ${w.myCF<w.myActual?'bar-worse':'bar-counterfactual'}" style="width:${cW}px">${w.myCF.toFixed(0)}</div>
+            <div class="bar ${isAfter&&w.myCF<w.myActual?'bar-worse':'bar-counterfactual'}" style="width:${cW}px">${w.myCF.toFixed(0)}</div>
           </div>
           <span class="${w.aW?'outcome-w':'outcome-l'}"><i class="ti ti-${w.aW?'circle-check':'circle-x'}"></i></span>
         </div>`;
       }).join('')}
     </div>
-    <p style="font-size:.72rem;color:#4a5568;margin-top:.75rem">* What-if scores swap traded players' actual points back to your roster. Same lineup decisions assumed.</p>`;
+    <p style="font-size:.72rem;color:#4a5568;margin-top:.75rem">* Pre-trade weeks shown dimmed — scores identical in both scenarios. What-if swaps traded players' actual points.</p>`;
 }
 
-async function fetchVerdict(d,targetId){
-  const {gotNames,gaveNames,tradeWeek,totalActualW,totalActualL,totalCFW,totalCFL,ptsDiff,outcome,leagueName}=d;
-  const prompt=`You are a fantasy football analyst. Briefly analyze this trade in 2-3 sentences:
-League: ${leagueName} | Trade: Week ${tradeWeek}
-Received: ${gotNames} | Gave: ${gaveNames}
-Actual record: ${totalActualW}–${totalActualL} | Without trade: ${totalCFW}–${totalCFL}
-Points differential: ${ptsDiff} | Impact: ${outcome}
-Start your verdict with 🟢 Trade won / 🔴 Trade lost / 🟡 Trade was a wash, then explain briefly.`;
-  try{
-    const resp=await fetch('/api/verdict',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({prompt})
-    });
-    const data=await resp.json();
-    const text=data.text||'Unable to generate verdict.';
-    document.getElementById(targetId).innerHTML=`<div style="line-height:1.7;font-size:.9rem">${esc(text).replace(/\n/g,'<br>')}</div>`;
-  }catch(e){
-    document.getElementById(targetId).innerHTML='<div class="error"><i class="ti ti-alert-circle"></i> Could not generate AI verdict.</div>';
+function renderPlayoffImpact(d,targetId){
+  const{actualStandings,cfStandings,myActualRank,myCFRank,myActualIn,myCFIn,playoffSpots}=d;
+
+  // Determine banner
+  let bannerClass,bannerIcon,bannerTitle,bannerSub;
+  if(myActualIn&&myCFIn){
+    if(myActualRank<myCFRank){bannerClass='in';bannerIcon='🟢';bannerTitle=`Trade improved your seeding (${ordinal(myCFRank)} → ${ordinal(myActualRank)})`;bannerSub='You made the playoffs either way, but the trade got you a better seed.';}
+    else if(myActualRank>myCFRank){bannerClass='neutral';bannerIcon='🟡';bannerTitle=`Trade cost you seeding (${ordinal(myCFRank)} → ${ordinal(myActualRank)})`;bannerSub='You made the playoffs either way, but you would have had a better seed without the trade.';}
+    else{bannerClass='neutral';bannerIcon='🟡';bannerTitle='Trade had no playoff seeding impact';bannerSub=`You were the ${ordinal(myActualRank)} seed either way.`;}
+  } else if(myActualIn&&!myCFIn){
+    bannerClass='in';bannerIcon='🟢';bannerTitle='The trade got you into the playoffs!';bannerSub=`Without it you would have finished ${ordinal(myCFRank)} — outside the top ${playoffSpots}.`;
+  } else if(!myActualIn&&myCFIn){
+    bannerClass='out';bannerIcon='🔴';bannerTitle='The trade knocked you out of the playoffs';bannerSub=`Without it you would have finished ${ordinal(myCFRank)} — inside the top ${playoffSpots}.`;
+  } else {
+    if(myActualRank<myCFRank){bannerClass='neutral';bannerIcon='🟡';bannerTitle=`Trade improved your final standing (${ordinal(myCFRank)} → ${ordinal(myActualRank)})`;bannerSub='Neither scenario reached the playoffs, but you finished higher.';}
+    else if(myActualRank>myCFRank){bannerClass='out';bannerIcon='🔴';bannerTitle=`Trade hurt your final standing (${ordinal(myCFRank)} → ${ordinal(myActualRank)})`;bannerSub='Neither scenario reached the playoffs, and you finished lower because of the trade.';}
+    else{bannerClass='neutral';bannerIcon='🟡';bannerTitle='Trade had no standings impact';bannerSub=`You finished ${ordinal(myActualRank)} either way, outside the playoffs.`;}
   }
+
+  // Build standings tables side by side
+  const tableHTML=(standings,label,meClass)=>{
+    return `<div>
+      <div class="section-label">${label}</div>
+      <table class="standings-table">
+        <thead><tr><th>#</th><th>Team</th><th>W–L</th><th>Pts</th><th>Seed</th></tr></thead>
+        <tbody>
+          ${standings.map((t,i)=>{
+            const rank=i+1;
+            const inPlayoffs=rank<=playoffSpots;
+            const isLastIn=rank===playoffSpots;
+            return `<tr class="${t.isMe?meClass:''} ${isLastIn?'playoff-line':''}">
+              <td style="color:#8892a0">${rank}</td>
+              <td style="font-weight:${t.isMe?600:400}">${esc(t.name)}${t.isMe?' <span style="color:#3b82f6;font-size:.7rem">(you)</span>':''}</td>
+              <td>${t.wins}–${t.losses}</td>
+              <td style="color:#8892a0">${t.pts.toFixed(1)}</td>
+              <td><span class="seed-badge ${inPlayoffs?'seed-in':'seed-out'}">${rank}</span></td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+      <div style="font-size:.72rem;color:#4a5568;margin-top:5px">Dashed line = playoff cutoff (top ${playoffSpots})</div>
+    </div>`;
+  };
+
+  // Rank change arrow
+  const rankDiff=myCFRank-myActualRank;
+  const rankChangeHTML=rankDiff===0
+    ?`<span class="change-same"><i class="ti ti-minus"></i> Same position</span>`
+    :rankDiff>0
+      ?`<span class="change-up"><i class="ti ti-arrow-up"></i> ${rankDiff} spot${rankDiff>1?'s':''} better with trade</span>`
+      :`<span class="change-down"><i class="ti ti-arrow-down"></i> ${Math.abs(rankDiff)} spot${Math.abs(rankDiff)>1?'s':''} worse with trade</span>`;
+
+  document.getElementById(targetId).innerHTML=`
+    <div class="playoff-banner ${bannerClass}">
+      <div class="icon">${bannerIcon}</div>
+      <div><div class="title">${bannerTitle}</div><div class="sub">${bannerSub}</div></div>
+    </div>
+    <div style="margin-bottom:1rem;font-size:.85rem;display:flex;align-items:center;gap:8px">
+      <span style="color:#8892a0">Final standings position:</span>
+      <strong>${ordinal(myActualRank)}</strong> (actual) vs <strong style="color:#93c5fd">${ordinal(myCFRank)}</strong> (no trade) — ${rankChangeHTML}
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+      ${tableHTML(actualStandings,'Actual standings (with trade)','me-actual')}
+      ${tableHTML(cfStandings,'What-if standings (no trade)','me-cf')}
+    </div>`;
+}
+
+function ordinal(n){const s=['th','st','nd','rd'],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0]);}
+
+function runManualSim(){
+  const totalWeeks=parseInt(document.getElementById('manual-total-weeks').value)||13;
+  const tradeWeek=parseInt(document.getElementById('manual-trade-week').value)||5;
+  const playoffSpots=parseInt(document.getElementById('manual-playoff-spots').value)||6;
+  const totalTeams=parseInt(document.getElementById('manual-total-teams').value)||12;
+  const teamScores=document.getElementById('manual-team-scores').value.split(',').map(Number).filter(n=>!isNaN(n));
+  const oppScores=document.getElementById('manual-opp-scores').value.split(',').map(Number).filter(n=>!isNaN(n));
+  const recPts=[...document.querySelectorAll('.rec-pts')].map(i=>i.value.split(',').map(Number).filter(n=>!isNaN(n)));
+  const gavePts=[...document.querySelectorAll('.gave-pts')].map(i=>i.value.split(',').map(Number).filter(n=>!isNaN(n)));
+  if(teamScores.length<totalWeeks||oppScores.length<totalWeeks){showError('manual-error','Please provide scores for all regular season weeks.');return;}
+  hideError('manual-error');
+
+  let aW=0,aL=0,cfW=0,cfL=0,aPts=0,cfPts=0;
+  const weekData=[];
+  for(let i=0;i<totalWeeks;i++){
+    const my=teamScores[i]||0,opp=oppScores[i]||0;
+    let delta=0;
+    if(i>=tradeWeek-1){
+      recPts.forEach(pts=>{delta-=(pts[i-(tradeWeek-1)]||0);});
+      gavePts.forEach(pts=>{delta+=(pts[i-(tradeWeek-1)]||0);});
+    }
+    const myCF=Math.max(0,my+delta);
+    aPts+=my;cfPts+=myCF;
+    if(my>opp)aW++;else aL++;
+    if(myCF>opp)cfW++;else cfL++;
+    weekData.push({w:i+1,myActual:my,myCF,oppScore:opp,aW:my>opp,cfW:myCF>opp,delta});
+  }
+  const ptsDiff=(aPts-cfPts).toFixed(1);
+  const outcome=aW>cfW?'win':aW<cfW?'loss':'neutral';
+
+  // Simple standings sim: we only know our own record, so estimate rank
+  // Create placeholder other teams based on typical distributions
+  const myActualRank=estimateRank(aW,aPts,totalTeams);
+  const myCFRank=estimateRank(cfW,cfPts,totalTeams);
+  const myActualIn=myActualRank<=playoffSpots;
+  const myCFIn=myCFRank<=playoffSpots;
+
+  document.getElementById('manual-results').classList.remove('hidden');
+  renderResults({totalActualW:aW,totalActualL:aL,totalCFW:cfW,totalCFL:cfL,actualPts:aPts,cfPts,ptsDiff,outcome,weekData,tradeWeek});
+  document.getElementById('manual-results-content').innerHTML=document.getElementById('results-content').innerHTML;
+
+  // Simple playoff summary for manual (no full league data)
+  const pEl=document.getElementById('manual-playoff-content');
+  const seedChange=myCFRank-myActualRank;
+  pEl.innerHTML=`
+    <div class="info-box"><i class="ti ti-info-circle"></i> Manual mode doesn't have full league data, so playoff position is estimated based on your record vs. league size.</div>
+    <div class="result-grid">
+      <div class="metric"><div class="metric-label">Est. final position (actual)</div><div class="metric-value" style="color:${myActualIn?'#86efac':'#fca5a5'}">${ordinal(myActualRank)}</div><div class="metric-sub">${myActualIn?'In playoffs':'Missed playoffs'}</div></div>
+      <div class="metric"><div class="metric-label">Est. final position (no trade)</div><div class="metric-value" style="color:${myCFIn?'#86efac':'#fca5a5'}">${ordinal(myCFRank)}</div><div class="metric-sub">${myCFIn?'In playoffs':'Missed playoffs'}</div></div>
+    </div>
+    <p style="font-size:.72rem;color:#4a5568">* For accurate playoff standings, use the Fetch from Sleeper tab.</p>`;
+}
+
+function estimateRank(wins,pts,totalTeams){
+  // Rough estimate: assume wins distributed across teams
+  const avgWins=wins; // we don't know others, so use win% to estimate
+  // Simple heuristic: rank proportional to win total vs total weeks
+  const winPct=wins/(wins+Math.max(1,totalTeams-wins));
+  return Math.max(1,Math.min(totalTeams,Math.round((1-winPct)*totalTeams)));
 }
 
 function addPlayerRow(containerId,nameClass,ptsClass){
@@ -451,38 +643,6 @@ function addPlayerRow(containerId,nameClass,ptsClass){
   row.className='player-input-row';
   row.innerHTML=`<input type="text" placeholder="Player name" class="${nameClass}"/><input type="text" placeholder="Wk pts (comma sep)" class="${ptsClass}" style="max-width:160px"/><button onclick="this.parentElement.remove()" style="background:none;border:none;color:#4a5568;cursor:pointer;padding:4px"><i class="ti ti-trash"></i></button>`;
   el.appendChild(row);
-}
-
-function runManualSim(){
-  const totalWeeks=parseInt(document.getElementById('manual-total-weeks').value)||14;
-  const tradeWeek=parseInt(document.getElementById('manual-trade-week').value)||5;
-  const teamScores=document.getElementById('manual-team-scores').value.split(',').map(Number).filter(n=>!isNaN(n));
-  const oppScores=document.getElementById('manual-opp-scores').value.split(',').map(Number).filter(n=>!isNaN(n));
-  const recNames=[...document.querySelectorAll('.rec-name')].map(i=>i.value.trim()).filter(Boolean);
-  const recPts=[...document.querySelectorAll('.rec-pts')].map(i=>i.value.split(',').map(Number).filter(n=>!isNaN(n)));
-  const gaveNames=[...document.querySelectorAll('.gave-name')].map(i=>i.value.trim()).filter(Boolean);
-  const gavePts=[...document.querySelectorAll('.gave-pts')].map(i=>i.value.split(',').map(Number).filter(n=>!isNaN(n)));
-  const weeksAfter=totalWeeks-tradeWeek+1;
-  if(teamScores.length<weeksAfter||oppScores.length<weeksAfter){showError('manual-error','Please provide weekly scores for all weeks after the trade.');return;}
-  hideError('manual-error');
-  let aW=0,aL=0,cfW=0,cfL=0,aPts=0,cfPts=0;
-  const weekData=[];
-  for(let i=0;i<weeksAfter;i++){
-    const my=teamScores[i]||0,opp=oppScores[i]||0;
-    let delta=0;
-    recPts.forEach(pts=>{delta-=(pts[i]||0);});
-    gavePts.forEach(pts=>{delta+=(pts[i]||0);});
-    const myCF=Math.max(0,my+delta);
-    aPts+=my;cfPts+=myCF;
-    if(my>opp)aW++;else aL++;
-    if(myCF>opp)cfW++;else cfL++;
-    weekData.push({w:tradeWeek+i,myActual:my,myCF,oppScore:opp,aW:my>opp,cfW:myCF>opp,delta});
-  }
-  const ptsDiff=(aPts-cfPts).toFixed(1);
-  const outcome=aW>cfW?'win':aW<cfW?'loss':'neutral';
-  document.getElementById('manual-results').classList.remove('hidden');
-  renderResults({totalActualW:aW,totalActualL:aL,totalCFW:cfW,totalCFL:cfL,actualWins:aW,cfWins:cfW,actualLosses:aL,cfLosses:cfL,actualPts:aPts,cfPts,ptsDiff,outcome,weekData,P:{},iGotIds:[],iGaveIds:[]});
-  document.getElementById('manual-results-content').innerHTML=document.getElementById('results-content').innerHTML;
 }
 
 function resetToTrades(){document.getElementById('card-results').classList.add('hidden');setStep(3);}
