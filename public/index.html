@@ -232,7 +232,7 @@ async function fetchLeagues(){
   try{
     const user = await sleeper(`/user/${un}`).catch(()=>{throw new Error(`User "${un}" not found. Check spelling — usernames are case-sensitive.`);});
     state.userId=user.user_id;
-    const seasons=['2024','2023','2022','2021','2020'];
+    const seasons=['2025','2024','2023','2022','2021','2020'];
     let all=[];
     for(const s of seasons){
       try{
