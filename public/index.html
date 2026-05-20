@@ -32,18 +32,22 @@
   .league-item:hover,.league-item.selected{border-color:#3b82f6;background:#1e2d45}
   .league-name{font-size:.92rem;font-weight:500}
   .league-meta{font-size:.78rem;color:#8892a0;margin-top:2px}
-  .badge{font-size:.7rem;padding:2px 8px;border-radius:20px;font-weight:500}
-  .badge-neutral{background:#1e2d45;color:#93c5fd}
+  .league-type-badge{font-size:.68rem;padding:2px 7px;border-radius:20px;font-weight:500;margin-left:6px}
+  .dynasty-badge{background:#2d1b69;color:#a78bfa}
+  .redraft-badge{background:#1e3a5f;color:#60a5fa}
+  .badge-neutral{background:#1e2d45;color:#93c5fd;font-size:.7rem;padding:2px 8px;border-radius:20px;font-weight:500}
   .trade-card{background:#0f1318;border:1px solid #2a3142;border-radius:10px;padding:1rem;margin-bottom:10px;cursor:pointer;transition:all .15s}
   .trade-card:hover,.trade-card.selected{border-color:#3b82f6}
   .trade-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-  .trade-players{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center}
+  .trade-players{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:start}
   .trade-side .got{color:#86efac;font-size:.78rem;margin-bottom:3px}
   .trade-side .gave{color:#fca5a5;font-size:.78rem;margin-bottom:3px}
-  .trade-arrow{color:#4a5568;font-size:1.2rem;text-align:center}
-  .player-name{font-weight:500;font-size:.88rem}
-  .result-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.25rem}
+  .trade-arrow{color:#4a5568;font-size:1.2rem;text-align:center;padding-top:18px}
+  .player-name{font-weight:500;font-size:.88rem;margin-bottom:2px}
+  .pick-pill{display:inline-flex;align-items:center;gap:4px;background:#2d1b69;border:1px solid #4c1d95;border-radius:6px;padding:3px 8px;font-size:.75rem;color:#a78bfa;margin-bottom:3px}
+  .pick-result-inline{color:#8892a0;font-size:.7rem}
   .result-grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1.25rem}
+  .result-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.25rem}
   .metric{background:#0f1318;border-radius:10px;padding:1rem;text-align:center}
   .metric-label{font-size:.75rem;color:#8892a0;margin-bottom:6px}
   .metric-value{font-size:1.5rem;font-weight:600}
@@ -60,7 +64,7 @@
   .bar-wrap{flex:1;display:flex;gap:4px}
   .bar{height:18px;border-radius:3px;min-width:3px;display:flex;align-items:center;padding:0 5px;font-size:.7rem;font-weight:500;overflow:hidden;white-space:nowrap}
   .bar-actual{background:#1e3a5f;color:#93c5fd}
-  .bar-counterfactual{background:#14532d;color:#86efac}
+  .bar-cf{background:#14532d;color:#86efac}
   .bar-worse{background:#4a1515;color:#fca5a5}
   .outcome-w{color:#86efac;width:14px;flex-shrink:0}
   .outcome-l{color:#fca5a5;width:14px;flex-shrink:0}
@@ -73,14 +77,30 @@
   .info-box{background:#1e2d45;border:1px solid #1e3a5f;border-radius:8px;padding:.85rem 1rem;font-size:.82rem;color:#93c5fd;margin-bottom:1rem;display:flex;gap:8px}
   .section-divider{border:none;border-top:1px solid #2a3142;margin:1.25rem 0}
   .hidden{display:none!important}
+  /* Pick cards */
+  .pick-card{background:#0f1318;border:1px solid #4c1d95;border-radius:10px;padding:1rem;margin-bottom:.75rem}
+  .pick-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem}
+  .pick-card-label{font-size:.9rem;font-weight:600;color:#a78bfa}
+  .pick-dir{font-size:.7rem;padding:2px 8px;border-radius:20px;font-weight:600}
+  .pick-dir-got{background:#14532d;color:#86efac}
+  .pick-dir-gave{background:#4a1515;color:#fca5a5}
+  .pick-row{font-size:.82rem;color:#8892a0;margin-bottom:3px}
+  .pick-row strong{color:#e8eaf0}
+  .pick-status-resolved{color:#86efac;font-size:.78rem;display:flex;align-items:center;gap:4px;margin-top:.5rem}
+  .pick-status-pending{color:#f59e0b;font-size:.78rem;display:flex;align-items:center;gap:4px;margin-top:.5rem}
+  .pick-status-used{color:#8892a0;font-size:.78rem;display:flex;align-items:center;gap:4px;margin-top:.5rem}
+  .drafted-player-box{margin-top:.5rem;background:#1a1f2a;border-radius:8px;padding:.6rem .85rem}
+  .drafted-player-name{font-weight:600;font-size:.88rem}
+  .drafted-player-meta{font-size:.72rem;color:#8892a0;margin-top:2px}
+  .drafted-sim-note{font-size:.72rem;color:#60a5fa;margin-top:4px;display:flex;align-items:center;gap:4px}
   /* Playoff */
   .playoff-banner{border-radius:10px;padding:1rem 1.25rem;margin-bottom:1rem;display:flex;align-items:center;gap:12px;font-size:.9rem}
   .playoff-banner.in{background:#0d2b1a;border:1px solid #166534}
   .playoff-banner.out{background:#2a0d0d;border:1px solid #7f1d1d}
   .playoff-banner.neutral{background:#1e2d45;border:1px solid #1e3a5f}
-  .playoff-banner .icon{font-size:1.4rem}
-  .playoff-banner .title{font-weight:600;margin-bottom:2px}
-  .playoff-banner .sub{font-size:.78rem;color:#8892a0}
+  .playoff-banner .p-icon{font-size:1.4rem}
+  .playoff-banner .p-title{font-weight:600;margin-bottom:2px}
+  .playoff-banner .p-sub{font-size:.78rem;color:#8892a0}
   .standings-table{width:100%;border-collapse:collapse;font-size:.82rem}
   .standings-table th{color:#8892a0;font-weight:500;text-align:left;padding:6px 8px;border-bottom:1px solid #2a3142}
   .standings-table td{padding:7px 8px;border-bottom:1px solid #1a1f2a}
@@ -97,7 +117,7 @@
   .bracket-round{margin-bottom:1rem}
   .round-label{font-size:.72rem;color:#4a5568;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem}
   .matchup-box{background:#0f1318;border:1px solid #2a3142;border-radius:8px;margin-bottom:8px;overflow:hidden}
-  .matchup-team{display:flex;justify-content:space-between;align-items:center;padding:7px 10px;font-size:.82rem}
+  .matchup-team{display:flex;justify-content:space-between;align-items:center;padding:7px 10px;font-size:.82rem;transition:background .1s}
   .matchup-team.winner{background:#0d2b1a}
   .matchup-team.loser{opacity:.5}
   .matchup-team.me-team{font-weight:600}
@@ -105,21 +125,20 @@
   .matchup-pts.winner-pts{color:#86efac}
   .seed-chip{font-size:.65rem;background:#1e2d45;color:#93c5fd;border-radius:3px;padding:1px 5px;margin-right:5px}
   .champion-badge{text-align:center;padding:.75rem;background:linear-gradient(135deg,#1a2e1a,#0d2b1a);border:1px solid #166534;border-radius:8px;font-size:.88rem;font-weight:600;color:#86efac;margin-top:.5rem}
-  .eliminated-badge{text-align:center;padding:.5rem;background:#2a0d0d;border:1px solid #7f1d1d;border-radius:8px;font-size:.82rem;color:#fca5a5;margin-top:.5rem}
   .change-up{color:#86efac;font-size:.75rem}
   .change-down{color:#fca5a5;font-size:.75rem}
   .change-same{color:#8892a0;font-size:.75rem}
   @media(max-width:640px){
     .result-grid-4{grid-template-columns:1fr 1fr}
-    .bracket-wrap{grid-template-columns:1fr}
-    .standings-cols{grid-template-columns:1fr!important}
+    .bracket-wrap,.standings-cols{grid-template-columns:1fr!important}
   }
 </style>
 </head>
 <body>
 <div class="app">
   <h1><i class="ti ti-arrows-exchange" style="font-size:1.4rem;color:#3b82f6"></i> Sleeper Trade Analyzer <span class="tag">BETA</span></h1>
-  <p class="subtitle">Simulate what your season would have looked like if you never made that trade.</p>
+  <p class="subtitle">Simulate what your season would have looked like without that trade. Dynasty leagues include full pick tracking &amp; draft outcomes.</p>
+
   <div class="tabs">
     <button class="tab active" onclick="switchTab('fetch')"><i class="ti ti-user-search"></i> Fetch from Sleeper</button>
     <button class="tab" onclick="switchTab('manual')"><i class="ti ti-pencil"></i> Manual Entry</button>
@@ -135,6 +154,7 @@
       <div class="step-sep">›</div>
       <div class="step" id="step4"><div class="step-num">4</div> Results</div>
     </div>
+
     <div class="card" id="card-username">
       <div class="card-title"><i class="ti ti-user"></i> Your Sleeper username</div>
       <div class="form-row">
@@ -143,19 +163,26 @@
       </div>
       <div id="fetch-error" class="error hidden"><i class="ti ti-alert-circle"></i> <span></span></div>
     </div>
+
     <div class="card hidden" id="card-leagues">
       <div class="card-title"><i class="ti ti-trophy"></i> Select a league</div>
       <div id="leagues-list"></div>
     </div>
+
     <div class="card hidden" id="card-trades">
       <div class="card-title"><i class="ti ti-arrows-exchange"></i> Select a trade to analyze</div>
-      <div class="info-box"><i class="ti ti-info-circle"></i> Showing trades involving your team. Pick one to run the what-if simulation.</div>
+      <div class="info-box"><i class="ti ti-info-circle"></i> Dynasty leagues show pick details &amp; draft outcomes inline on each trade card.</div>
       <div id="trades-list"></div>
     </div>
+
     <div id="card-results" class="hidden">
       <div class="card">
         <div class="card-title"><i class="ti ti-chart-bar"></i> Season record impact</div>
         <div id="results-content"></div>
+      </div>
+      <div class="card hidden" id="card-picks">
+        <div class="card-title"><i class="ti ti-ticket"></i> Draft pick details &amp; outcomes</div>
+        <div id="picks-content"></div>
       </div>
       <div class="card">
         <div class="card-title"><i class="ti ti-tournament"></i> Playoff &amp; standings impact</div>
@@ -170,19 +197,19 @@
   </div>
 
   <div id="tab-manual" class="hidden">
-    <div class="info-box"><i class="ti ti-info-circle"></i> Manual mode supports record &amp; points simulation. For full playoff bracket simulation, use the Fetch from Sleeper tab.</div>
+    <div class="info-box"><i class="ti ti-info-circle"></i> Manual mode supports record &amp; points simulation. For pick tracking, playoff bracket simulation, and dynasty features, use Fetch from Sleeper.</div>
     <div class="card">
       <div class="card-title"><i class="ti ti-pencil"></i> Trade details</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem" id="manual-player-grid">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
         <div>
           <label style="font-size:.82rem;color:#8892a0;display:block;margin-bottom:8px">Players you received</label>
           <div id="received-players"><div style="display:flex;gap:8px;margin-bottom:8px"><input type="text" placeholder="Player name" class="rec-name"/><input type="text" placeholder="Wk pts (comma sep)" class="rec-pts" style="max-width:160px"/></div></div>
-          <button class="btn btn-ghost" style="width:100%;margin-top:4px;font-size:.8rem" onclick="addRow('received-players','rec-name','rec-pts')"><i class="ti ti-plus"></i> Add player</button>
+          <button class="btn btn-ghost" style="width:100%;margin-top:4px;font-size:.8rem" onclick="addRow('received-players','rec-name','rec-pts')"><i class="ti ti-plus"></i> Add</button>
         </div>
         <div>
           <label style="font-size:.82rem;color:#8892a0;display:block;margin-bottom:8px">Players you gave away</label>
           <div id="gave-players"><div style="display:flex;gap:8px;margin-bottom:8px"><input type="text" placeholder="Player name" class="gave-name"/><input type="text" placeholder="Wk pts (comma sep)" class="gave-pts" style="max-width:160px"/></div></div>
-          <button class="btn btn-ghost" style="width:100%;margin-top:4px;font-size:.8rem" onclick="addRow('gave-players','gave-name','gave-pts')"><i class="ti ti-plus"></i> Add player</button>
+          <button class="btn btn-ghost" style="width:100%;margin-top:4px;font-size:.8rem" onclick="addRow('gave-players','gave-name','gave-pts')"><i class="ti ti-plus"></i> Add</button>
         </div>
       </div>
       <hr class="section-divider"/>
@@ -206,7 +233,7 @@
 
 <script>
 const PROXY='/api/sleeper';
-let S={userId:null,leagues:[],league:null,trade:null,rosterMap:{},myRid:null};
+let S={userId:null,leagues:[],league:null,trade:null,rosterMap:{},myRid:null,isDynasty:false,draftData:null};
 
 function switchTab(t){
   document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',i===(t==='fetch'?0:1)));
@@ -227,6 +254,48 @@ async function api(path){
   return r.json();
 }
 
+// Dynasty: detect league type (2 = dynasty/keeper in Sleeper)
+function isDynastyLeague(league){
+  return league.settings?.type===2||league.settings?.type==='2';
+}
+
+// ── Draft data (dynasty only) ──────────────────────────────────────────────
+async function fetchDraftData(leagueId){
+  try{
+    const drafts=await api(`/league/${leagueId}/drafts`);
+    if(!drafts?.length) return{drafts:[],pickMap:{}};
+    const draftMeta=[];
+    for(const d of drafts){
+      try{
+        const picks=await api(`/draft/${d.draft_id}/picks`);
+        draftMeta.push({...d,picks:picks||[]});
+      }catch(e){draftMeta.push({...d,picks:[]});}
+    }
+    return{drafts:draftMeta};
+  }catch(e){return{drafts:[],pickMap:{}};}
+}
+
+// Match a draft pick transaction object → the player selected with it
+function resolvePickToPlayer(pk, draftData){
+  if(!draftData?.drafts?.length) return null;
+  const P=window._P||{};
+  // Match by season and round and who ended up owning it (owner_roster_id)
+  const targetSeason=String(pk.season);
+  const targetRound=pk.round;
+  const ownerRid=pk.owner_roster_id; // roster that received this pick in the trade
+  for(const draft of draftData.drafts){
+    if(String(draft.season)!==targetSeason) continue;
+    // Find the pick in this draft used by ownerRid in the target round
+    const match=draft.picks.find(p=>p.round===targetRound&&(p.roster_id===ownerRid||p.picked_by===String(ownerRid)));
+    if(match?.player_id){
+      const pl=P[match.player_id];
+      return{player_id:match.player_id,name:pl?.full_name||match.player_id,position:pl?.position||'',team:pl?.team||'N/A',pick_no:match.pick_no,round:match.round};
+    }
+  }
+  return null;
+}
+
+// ── Fetch flow ─────────────────────────────────────────────────────────────
 async function fetchLeagues(){
   const un=document.getElementById('username-input').value.trim();
   if(!un){showErr('fetch-error','Please enter a username');return;}
@@ -239,14 +308,22 @@ async function fetchLeagues(){
     const yr=new Date().getFullYear();
     const seasons=Array.from({length:6},(_,i)=>String(yr-i));
     let all=[];
-    for(const s of seasons){try{const ls=await api(`/user/${user.user_id}/leagues/nfl/${s}`);if(ls?.length)all.push(...ls.map(l=>({...l,season:s})));}catch(e){}}
+    for(const s of seasons){
+      try{const ls=await api(`/user/${user.user_id}/leagues/nfl/${s}`);if(ls?.length)all.push(...ls.map(l=>({...l,season:s})));}
+      catch(e){}
+    }
     if(!all.length)throw new Error('No leagues found.');
     S.leagues=all;
-    document.getElementById('leagues-list').innerHTML=all.map((l,i)=>`
-      <div class="league-item" onclick="selectLeague(${i})">
-        <div><div class="league-name">${esc(l.name)}</div><div class="league-meta">${l.season} · ${l.total_rosters} teams</div></div>
+    document.getElementById('leagues-list').innerHTML=all.map((l,i)=>{
+      const dyn=isDynastyLeague(l);
+      return`<div class="league-item" onclick="selectLeague(${i})">
+        <div>
+          <div class="league-name">${esc(l.name)}<span class="league-type-badge ${dyn?'dynasty-badge':'redraft-badge'}">${dyn?'Dynasty':'Redraft'}</span></div>
+          <div class="league-meta">${l.season} · ${l.total_rosters} teams</div>
+        </div>
         <i class="ti ti-chevron-right" style="color:#4a5568"></i>
-      </div>`).join('');
+      </div>`;
+    }).join('');
     document.getElementById('card-leagues').classList.remove('hidden');
     setStep(2);
   }catch(e){showErr('fetch-error',e.message);}
@@ -256,44 +333,86 @@ async function fetchLeagues(){
 async function selectLeague(idx){
   document.querySelectorAll('.league-item').forEach((el,i)=>el.classList.toggle('selected',i===idx));
   S.league=S.leagues[idx];
-  const el=document.getElementById('card-trades');
-  el.classList.remove('hidden');
-  el.innerHTML='<div class="card-title"><i class="ti ti-arrows-exchange"></i> Loading trades...</div><div class="loader"></div>';
+  S.isDynasty=isDynastyLeague(S.league);
+  S.draftData=null;
+  const tradesEl=document.getElementById('card-trades');
+  tradesEl.classList.remove('hidden');
+  tradesEl.innerHTML=`<div class="card-title"><i class="ti ti-arrows-exchange"></i> Loading trades${S.isDynasty?' &amp; draft data':''}...</div><div class="loader"></div>`;
   try{
-    const [ros,users]=await Promise.all([api(`/league/${S.league.league_id}/rosters`),api(`/league/${S.league.league_id}/users`)]);
+    const [ros,users]=await Promise.all([
+      api(`/league/${S.league.league_id}/rosters`),
+      api(`/league/${S.league.league_id}/users`)
+    ]);
     const uMap={};users.forEach(u=>uMap[u.user_id]=u.display_name||u.username);
     S.rosterMap={};ros.forEach(r=>{S.rosterMap[r.roster_id]={...r,name:uMap[r.owner_id]||`Team ${r.roster_id}`};});
     const me=ros.find(r=>r.owner_id===S.userId);
     if(!me)throw new Error("Couldn't find your roster.");
     S.myRid=me.roster_id;
-    if(!window._P)window._P=await api('/players/nfl').catch(()=>({}));
+    if(!window._P) window._P=await api('/players/nfl').catch(()=>({}));
+    // Fetch draft data only for dynasty leagues
+    if(S.isDynasty) S.draftData=await fetchDraftData(S.league.league_id);
     const ps=S.league.settings?.playoff_week_start||14;
     const txAll=[];
-    for(let w=1;w<=ps;w++){try{const tx=await api(`/league/${S.league.league_id}/transactions/${w}`);if(tx?.length)txAll.push(...tx.map(t=>({...t,week:w})));}catch(e){}}
+    for(let w=1;w<=ps;w++){
+      try{const tx=await api(`/league/${S.league.league_id}/transactions/${w}`);if(tx?.length)txAll.push(...tx.map(t=>({...t,week:w})));}
+      catch(e){}
+    }
     const myTrades=txAll.filter(t=>t.type==='trade'&&t.roster_ids?.includes(S.myRid));
     S.transactions=myTrades;
     renderTrades(myTrades);
     setStep(3);
-  }catch(e){el.innerHTML=`<div class="card-title"><i class="ti ti-arrows-exchange"></i> Error</div><div class="error"><i class="ti ti-alert-circle"></i> ${esc(e.message)}</div>`;}
+  }catch(e){
+    tradesEl.innerHTML=`<div class="card-title">Error</div><div class="error"><i class="ti ti-alert-circle"></i> ${esc(e.message)}</div>`;
+  }
+}
+
+function renderPickPill(pk, direction){
+  const P=window._P||{};
+  const resolved=S.isDynasty?resolvePickToPlayer(pk,S.draftData):null;
+  const yr=new Date().getFullYear();
+  const future=parseInt(pk.season)>yr;
+  const orig=S.rosterMap[pk.original_roster_id]?.name||`Team ${pk.original_roster_id}`;
+  const label=`${pk.season} Rd ${pk.round}`;
+  let sub='';
+  if(future) sub='<span style="color:#f59e0b"> · future</span>';
+  else if(resolved) sub=`<span style="color:#86efac"> · ${esc(resolved.name)}</span>`;
+  else sub='<span style="color:#8892a0"> · pick used</span>';
+  return`<div class="pick-pill"><i class="ti ti-ticket" style="font-size:.7rem"></i>${label}${sub}</div>`;
 }
 
 function renderTrades(trades){
   const el=document.getElementById('card-trades');
   const P=window._P||{};
-  if(!trades.length){el.innerHTML='<div class="card-title"><i class="ti ti-arrows-exchange"></i> No trades found</div><p style="color:#8892a0;font-size:.88rem">No trades found for your team.</p>';return;}
+  if(!trades.length){
+    el.innerHTML='<div class="card-title"><i class="ti ti-arrows-exchange"></i> No trades found</div><p style="color:#8892a0;font-size:.88rem">No trades found for your team in this league.</p>';
+    return;
+  }
   el.innerHTML='<div class="card-title"><i class="ti ti-arrows-exchange"></i> Select a trade to analyze</div>'+
-    '<div class="info-box"><i class="ti ti-info-circle"></i> Showing trades involving your team.</div>'+
+    `<div class="info-box"><i class="ti ti-info-circle"></i> ${S.isDynasty?'Dynasty league — picks show season, round, and drafted player where resolved.':'Redraft league — player points simulation only.'}</div>`+
     trades.map((t,i)=>{
       const myIdx=t.roster_ids.indexOf(S.myRid),theirIdx=myIdx===0?1:0;
-      const got=t.adds?Object.entries(t.adds).filter(([,r])=>r===S.myRid).map(([p])=>P[p]?.full_name||p):[];
-      const gave=t.drops?Object.entries(t.drops).filter(([,r])=>r===S.myRid).map(([p])=>P[p]?.full_name||p):[];
+      const gotPlayers=t.adds?Object.entries(t.adds).filter(([,r])=>r===S.myRid).map(([p])=>P[p]?.full_name||p):[];
+      const gavePlayers=t.drops?Object.entries(t.drops).filter(([,r])=>r===S.myRid).map(([p])=>P[p]?.full_name||p):[];
+      const gotPicks=S.isDynasty?(t.draft_picks||[]).filter(pk=>pk.owner_roster_id===S.myRid):[];
+      const gavePicks=S.isDynasty?(t.draft_picks||[]).filter(pk=>pk.previous_owner_roster_id===S.myRid):[];
       const opp=S.rosterMap[t.roster_ids[theirIdx]]?.name||'Opponent';
-      return `<div class="trade-card" onclick="selectTrade(${i})">
-        <div class="trade-header"><span style="font-size:.85rem;font-weight:500">vs ${esc(opp)}</span><span class="badge badge-neutral">Week ${t.week}</span></div>
+      const hasContent=gotPlayers.length||gavePlayers.length||gotPicks.length||gavePicks.length;
+      return`<div class="trade-card" onclick="selectTrade(${i})">
+        <div class="trade-header"><span style="font-size:.85rem;font-weight:500">vs ${esc(opp)}</span><span class="badge-neutral">Week ${t.week}</span></div>
         <div class="trade-players">
-          <div class="trade-side"><div class="got">You received</div>${got.map(p=>`<div class="player-name">${esc(p)}</div>`).join('')||'<div style="color:#4a5568;font-size:.78rem">picks/other</div>'}</div>
+          <div class="trade-side">
+            <div class="got">You received</div>
+            ${gotPlayers.map(p=>`<div class="player-name">${esc(p)}</div>`).join('')}
+            ${gotPicks.map(pk=>renderPickPill(pk,'got')).join('')}
+            ${!gotPlayers.length&&!gotPicks.length?'<div style="color:#4a5568;font-size:.78rem">—</div>':''}
+          </div>
           <div class="trade-arrow"><i class="ti ti-arrows-exchange"></i></div>
-          <div class="trade-side"><div class="gave">You gave</div>${gave.map(p=>`<div class="player-name">${esc(p)}</div>`).join('')||'<div style="color:#4a5568;font-size:.78rem">picks/other</div>'}</div>
+          <div class="trade-side">
+            <div class="gave">You gave</div>
+            ${gavePlayers.map(p=>`<div class="player-name">${esc(p)}</div>`).join('')}
+            ${gavePicks.map(pk=>renderPickPill(pk,'gave')).join('')}
+            ${!gavePlayers.length&&!gavePicks.length?'<div style="color:#4a5568;font-size:.78rem">—</div>':''}
+          </div>
         </div>
       </div>`;
     }).join('');
@@ -303,14 +422,15 @@ async function selectTrade(idx){
   S.trade=S.transactions[idx];
   document.querySelectorAll('.trade-card').forEach((el,i)=>el.classList.toggle('selected',i===idx));
   document.getElementById('card-results').classList.remove('hidden');
-  document.getElementById('results-content').innerHTML='<div style="display:flex;align-items:center;gap:10px"><div class="loader"></div> Fetching all team data & running simulation...</div>';
-  document.getElementById('playoff-content').innerHTML='';
-  document.getElementById('bracket-content').innerHTML='';
+  document.getElementById('results-content').innerHTML='<div style="display:flex;align-items:center;gap:10px"><div class="loader"></div> Fetching all team data &amp; running simulation...</div>';
+  ['picks-content','playoff-content','bracket-content'].forEach(id=>document.getElementById(id).innerHTML='');
+  document.getElementById('card-picks').classList.add('hidden');
   setStep(4);
   try{await runSimulation();}
   catch(e){document.getElementById('results-content').innerHTML=`<div class="error"><i class="ti ti-alert-circle"></i> ${esc(e.message)}</div>`;}
 }
 
+// ── Core simulation ────────────────────────────────────────────────────────
 async function runSimulation(){
   const league=S.league, trade=S.trade;
   const tradeWeek=trade.week;
@@ -319,202 +439,191 @@ async function runSimulation(){
   const playoffSpots=league.settings?.playoff_teams||4;
   const P=window._P||{};
 
-  // Players involved in trade from my perspective
+  // Player IDs in this trade
   const iGotIds=trade.adds?Object.entries(trade.adds).filter(([,r])=>r===S.myRid).map(([p])=>p):[];
   const iGaveIds=trade.drops?Object.entries(trade.drops).filter(([,r])=>r===S.myRid).map(([p])=>p):[];
-  // All players involved in trade (any direction)
-  const allTradedIds=[...new Set([
-    ...Object.keys(trade.adds||{}),
-    ...Object.keys(trade.drops||{})
-  ])];
+  const allTradedIds=[...new Set([...Object.keys(trade.adds||{}),...Object.keys(trade.drops||{})])];
 
-  // Fetch all matchups: regular season + playoffs
+  // Dynasty: resolve picks to players and add to tracked IDs
+  let gotPicks=[],gavePicks=[],resolvedGotPicks=[],resolvedGavePicks=[];
+  let picksGotPlayerIds=[],picksGavePlayerIds=[];
+  if(S.isDynasty){
+    gotPicks=(trade.draft_picks||[]).filter(pk=>pk.owner_roster_id===S.myRid);
+    gavePicks=(trade.draft_picks||[]).filter(pk=>pk.previous_owner_roster_id===S.myRid);
+    resolvedGotPicks=gotPicks.map(pk=>({...pk,resolved:resolvePickToPlayer(pk,S.draftData)}));
+    resolvedGavePicks=gavePicks.map(pk=>({...pk,resolved:resolvePickToPlayer(pk,S.draftData)}));
+    picksGotPlayerIds=resolvedGotPicks.filter(p=>p.resolved).map(p=>p.resolved.player_id);
+    picksGavePlayerIds=resolvedGavePicks.filter(p=>p.resolved).map(p=>p.resolved.player_id);
+  }
+  const allTrackedIds=[...new Set([...allTradedIds,...picksGotPlayerIds,...picksGavePlayerIds])];
+
+  // Fetch all matchup weeks
   const allMatchups={};
-  // Determine last playoff week (try up to 4 weeks after playoff start)
-  const maxWk=playoffStart+4;
-  for(let w=1;w<=maxWk;w++){
-    try{allMatchups[w]=await api(`/league/${league.league_id}/matchups/${w}`);}catch(e){break;}
+  for(let w=1;w<=playoffStart+4;w++){
+    try{allMatchups[w]=await api(`/league/${league.league_id}/matchups/${w}`);}
+    catch(e){break;}
   }
 
   const rIds=Object.keys(S.rosterMap).map(Number);
-
-  // Build cfPts lookup: for each week >= tradeWeek, for each roster,
-  // compute counterfactual score by swapping traded player points to correct roster.
-  // Strategy: find each traded player on whatever roster they appear in that week,
-  // then apply delta to that roster and the roster that "should" have them.
-  function getCFScore(week, rosterId, actualMatchups){
-    if(week < tradeWeek) return null; // no change pre-trade
-    const mu=actualMatchups[week];
-    if(!mu) return null;
-    const entry=mu.find(m=>m.roster_id===rosterId);
-    if(!entry) return null;
-    let score=entry.points||0;
-    const pp=entry.players_points||{};
-
-    // For each traded player, find who has them this week
-    allTradedIds.forEach(pid=>{
-      // Was this player on this roster post-trade (they were received by this team)?
-      const receivedByThisTeam=trade.adds&&trade.adds[pid]===rosterId;
-      // Was this player on this roster pre-trade (they were given away by this team)?
-      const givenByThisTeam=trade.drops&&trade.drops[pid]===rosterId;
-
-      if(receivedByThisTeam){
-        // Post-trade this team HAS the player. CF: they shouldn't.
-        // Remove player's actual points from this roster's CF score.
-        score -= (pp[pid]||0);
-        // Add back whatever the player would have scored on original roster
-        // Find original roster (who dropped them)
-        const origRid=trade.drops?Object.entries(trade.drops).find(([p])=>p===pid)?.[1]:null;
-        if(origRid){
-          const origEntry=mu.find(m=>m.roster_id===origRid);
-          const origPP=origEntry?.players_points||{};
-          // Player isn't on orig roster post-trade, so origPP[pid] is likely 0
-          // Use actual points scored (same player, same week) as best proxy
-          score += (pp[pid]||0); // net zero if same points — handled below
-        }
-      }
-      if(givenByThisTeam){
-        // Post-trade this team GAVE the player. CF: they should still have them.
-        // Find where the player actually is this week (new owner)
-        const newRid=trade.adds?Object.entries(trade.adds).find(([p])=>p===pid)?.[1]:null;
-        if(newRid){
-          const newEntry=mu.find(m=>m.roster_id===newRid);
-          const newPP=newEntry?.players_points||{};
-          // Add player's points (from new owner's lineup) back to this team's CF score
-          score += (newPP[pid]||0);
-        }
-      }
-    });
-    return Math.max(0, score);
-  }
-
-  // Build team stats
   const teamStats={};
   rIds.forEach(rid=>{teamStats[rid]={wins:0,losses:0,pts:0,cfWins:0,cfLosses:0,cfPts:0};});
   const myWeekData=[];
 
+  // CF score function: for a given week+roster, compute counterfactual score
+  // by properly swapping traded players (and pick-drafted players for dynasty) across rosters
+  function getCFScore(week, rosterId){
+    if(week<tradeWeek) return null;
+    const mu=allMatchups[week];
+    if(!mu) return null;
+    const entry=mu.find(m=>m.roster_id===rosterId);
+    if(!entry) return null;
+    let score=entry.points||0;
+
+    allTrackedIds.forEach(pid=>{
+      // Determine how this player moved in the trade (from my perspective)
+      const myTeamReceived=!!trade.adds&&trade.adds[pid]===S.myRid;    // I got this player
+      const myTeamGave=!!trade.drops&&trade.drops[pid]===S.myRid;      // I gave this player
+      const isPickGot=picksGotPlayerIds.includes(pid);   // I got a pick that selected this player
+      const isPickGave=picksGavePlayerIds.includes(pid); // I gave a pick that selected this player
+      // Who actually has this player this week?
+      let actualHolder=null;
+      mu.forEach(m=>{if(m.players_points&&pid in m.players_points)actualHolder=m.roster_id;});
+      if(actualHolder===null) return;
+      const holderEntry=mu.find(m=>m.roster_id===actualHolder);
+      const pts=(holderEntry?.players_points||{})[pid]||0;
+      if(!pts) return;
+
+      if(rosterId===actualHolder){
+        // This roster has the player in actuality
+        // In CF, should they NOT have them?
+        if(myTeamReceived||isPickGot){
+          // I received this player/pick — in CF I wouldn't have them
+          if(rosterId===S.myRid) score-=pts;
+        }
+        // If myTeamGave/isPickGave: the other team has them, and in CF they wouldn't — handled below
+        const theyReceived=!!trade.adds&&trade.adds[pid]!==undefined&&trade.adds[pid]===rosterId&&trade.adds[pid]!==S.myRid;
+        if(theyReceived&&rosterId!==S.myRid) score-=pts;
+      } else {
+        // This roster does NOT have the player in actuality
+        // In CF, should they have them?
+        if((myTeamGave||isPickGave)&&rosterId===S.myRid){
+          // I gave this player away — in CF I'd still have them
+          score+=pts;
+        }
+        if(rosterId!==S.myRid){
+          // Was this player given TO this other roster? In CF they wouldn't have them (already handled above)
+          // Was this player given FROM this other roster? In CF they'd still have them
+          const theyGave=!!trade.drops&&trade.drops[pid]===rosterId;
+          if(theyGave) score+=pts;
+        }
+      }
+    });
+    return Math.max(0,score);
+  }
+
+  // Regular season
   for(let w=1;w<=totRegWks;w++){
-    const mu=allMatchups[w];
-    if(!mu) continue;
+    const mu=allMatchups[w]; if(!mu) continue;
     const pairs={};
     mu.forEach(m=>{if(!pairs[m.matchup_id])pairs[m.matchup_id]=[];pairs[m.matchup_id].push(m);});
     Object.values(pairs).forEach(pair=>{
       if(pair.length!==2)return;
       const [a,b]=pair;
       const aPts=a.points||0,bPts=b.points||0;
-      // Actual
       if(aPts>bPts){teamStats[a.roster_id].wins++;teamStats[b.roster_id].losses++;}
       else{teamStats[b.roster_id].wins++;teamStats[a.roster_id].losses++;}
-      teamStats[a.roster_id].pts+=aPts;
-      teamStats[b.roster_id].pts+=bPts;
-      // CF
-      const aCF=getCFScore(w,a.roster_id,allMatchups)??aPts;
-      const bCF=getCFScore(w,b.roster_id,allMatchups)??bPts;
+      teamStats[a.roster_id].pts+=aPts;teamStats[b.roster_id].pts+=bPts;
+      const aCF=getCFScore(w,a.roster_id)??aPts;
+      const bCF=getCFScore(w,b.roster_id)??bPts;
       if(aCF>bCF){teamStats[a.roster_id].cfWins++;teamStats[b.roster_id].cfLosses++;}
       else{teamStats[b.roster_id].cfWins++;teamStats[a.roster_id].cfLosses++;}
-      teamStats[a.roster_id].cfPts+=aCF;
-      teamStats[b.roster_id].cfPts+=bCF;
-      // My week data
+      teamStats[a.roster_id].cfPts+=aCF;teamStats[b.roster_id].cfPts+=bCF;
       if(a.roster_id===S.myRid||b.roster_id===S.myRid){
-        const myA=a.roster_id===S.myRid;
-        const myActual=myA?aPts:bPts, oppActual=myA?bPts:aPts;
-        const myCF=myA?aCF:bCF;
+        const isA=a.roster_id===S.myRid;
+        const myActual=isA?aPts:bPts,oppActual=isA?bPts:aPts;
+        const myCF=isA?aCF:bCF;
         myWeekData.push({w,myActual,myCF,oppScore:oppActual,aW:myActual>oppActual,cfW:myCF>oppActual});
       }
     });
   }
 
   // Standings
-  const sortS=(cf)=>rIds.map(rid=>{
+  const sortS=cf=>rIds.map(rid=>{
     const s=teamStats[rid];
     return{rid,name:S.rosterMap[rid]?.name||`Team ${rid}`,
-      wins:cf?s.cfWins:s.wins,losses:cf?s.cfLosses:s.losses,
-      pts:cf?s.cfPts:s.pts,isMe:rid===S.myRid};
+      wins:cf?s.cfWins:s.wins,losses:cf?s.cfLosses:s.losses,pts:cf?s.cfPts:s.pts,isMe:rid===S.myRid};
   }).sort((a,b)=>b.wins-a.wins||b.pts-a.pts);
 
   const actualS=sortS(false),cfS=sortS(true);
   const myActualRank=actualS.findIndex(t=>t.isMe)+1;
   const myCFRank=cfS.findIndex(t=>t.isMe)+1;
-  const myActualIn=myActualRank<=playoffSpots;
-  const myCFIn=myCFRank<=playoffSpots;
-
+  const myActualIn=myActualRank<=playoffSpots,myCFIn=myCFRank<=playoffSpots;
   const ms=teamStats[S.myRid];
   const ptsDiff=(ms.pts-ms.cfPts).toFixed(1);
   const outcome=ms.wins>ms.cfWins?'win':ms.wins<ms.cfWins?'loss':'neutral';
 
   renderResults({totalActualW:ms.wins,totalActualL:ms.losses,totalCFW:ms.cfWins,totalCFL:ms.cfLosses,
     actualPts:ms.pts,cfPts:ms.cfPts,ptsDiff,outcome,weekData:myWeekData,tradeWeek});
+
+  // Dynasty: render pick details card
+  if(S.isDynasty&&(resolvedGotPicks.length||resolvedGavePicks.length)){
+    document.getElementById('card-picks').classList.remove('hidden');
+    renderPickDetails(resolvedGotPicks,resolvedGavePicks);
+  }
+
   renderPlayoffStandings({actualS,cfS,myActualRank,myCFRank,myActualIn,myCFIn,playoffSpots},'playoff-content');
 
-  // Playoff bracket simulation
-  // Determine which teams made playoffs in each scenario
-  const actualPlayoffTeams=actualS.slice(0,playoffSpots);
-  const cfPlayoffTeams=cfS.slice(0,playoffSpots);
-  // Simulate bracket using actual playoff week scores with CF adjustments
+  // Playoff bracket
   const playoffWks=[];
-  for(let w=playoffStart;w<=maxWk;w++){if(allMatchups[w]&&allMatchups[w].length>0)playoffWks.push(w);}
-
-  const actualBracket=simulateBracket(actualPlayoffTeams,playoffWks,allMatchups,false,tradeWeek);
-  const cfBracket=simulateBracket(cfPlayoffTeams,playoffWks,allMatchups,true,tradeWeek);
-
+  for(let w=playoffStart;w<=playoffStart+4;w++){if(allMatchups[w]?.length)playoffWks.push(w);}
+  const actualBracket=simulateBracket(actualS.slice(0,playoffSpots),playoffWks,allMatchups,false,getCFScore);
+  const cfBracket=simulateBracket(cfS.slice(0,playoffSpots),playoffWks,allMatchups,true,getCFScore);
   renderBracket(actualBracket,cfBracket,'bracket-content');
 }
 
-function simulateBracket(playoffTeams,playoffWks,allMatchups,useCF,tradeWeek){
-  // Build seeded bracket: use actual playoff matchup data when available
-  // Each round: pair teams by matchup_id from Sleeper data, determine winner by points
-  const rounds=[];
-  let remaining=playoffTeams.map((t,i)=>({...t,seed:i+1}));
-
-  playoffWks.forEach((wk,ri)=>{
-    const mu=allMatchups[wk];
-    if(!mu||!mu.length)return;
-    const pairs={};
-    mu.forEach(m=>{if(!pairs[m.matchup_id])pairs[m.matchup_id]=[];pairs[m.matchup_id].push(m);});
-    const roundMatchups=[];
-
-    Object.values(pairs).forEach(pair=>{
-      if(pair.length!==2)return;
-      const [a,b]=pair;
-      // Find team info for these roster IDs
-      const teamA=remaining.find(t=>t.rid===a.roster_id);
-      const teamB=remaining.find(t=>t.rid===b.roster_id);
-      if(!teamA||!teamB)return;
-      // Get scores — apply CF adjustment if needed
-      let aPts=a.points||0,bPts=b.points||0;
-      if(useCF){
-        aPts=getCFScorePlayoff(a,allMatchups,wk,tradeWeek);
-        bPts=getCFScorePlayoff(b,allMatchups,wk,tradeWeek);
-      }
-      const aWins=aPts>bPts;
-      roundMatchups.push({
-        teamA:{...teamA,pts:aPts},
-        teamB:{...teamB,pts:bPts},
-        winner:aWins?{...teamA,pts:aPts}:{...teamB,pts:bPts},
-        loser:aWins?{...teamB,pts:bPts}:{...teamA,pts:aPts}
-      });
-    });
-    if(roundMatchups.length){
-      rounds.push({week:wk,roundNum:ri+1,matchups:roundMatchups});
-      remaining=roundMatchups.map(m=>m.winner);
+// ── Pick details (dynasty only) ────────────────────────────────────────────
+function renderPickDetails(gotPicks, gavePicks){
+  const yr=new Date().getFullYear();
+  const renderCard=(pk,dir)=>{
+    const got=dir==='got';
+    const future=parseInt(pk.season)>yr;
+    const orig=S.rosterMap[pk.original_roster_id]?.name||`Team ${pk.original_roster_id}`;
+    const via=pk.previous_owner_roster_id&&pk.previous_owner_roster_id!==pk.original_roster_id
+      ?`Via ${S.rosterMap[pk.previous_owner_roster_id]?.name||`Team ${pk.previous_owner_roster_id}`}`:null;
+    let statusHTML='',draftedHTML='';
+    if(future){
+      statusHTML=`<div class="pick-status-pending"><i class="ti ti-clock"></i> Draft not yet held — pick is pending</div>`;
+    } else if(pk.resolved){
+      const r=pk.resolved;
+      statusHTML=`<div class="pick-status-resolved"><i class="ti ti-circle-check"></i> Resolved — pick #${r.pick_no} used</div>`;
+      draftedHTML=`<div class="drafted-player-box">
+        <div class="drafted-player-name">${esc(r.name)}</div>
+        <div class="drafted-player-meta">${r.position||''}${r.team?' · '+r.team:''} · Pick #${r.pick_no} (Round ${r.round})</div>
+        <div class="drafted-sim-note"><i class="ti ti-info-circle"></i> ${got
+          ?`${esc(r.name)}'s weekly points included in what-if simulation (you wouldn't have had them)`
+          :`${esc(r.name)}'s weekly points included in what-if simulation (you would have kept this pick)`
+        }</div>
+      </div>`;
+    } else {
+      statusHTML=`<div class="pick-status-used"><i class="ti ti-minus"></i> Draft held but pick selection not found</div>`;
     }
-  });
-  return{rounds,champion:remaining.length===1?remaining[0]:null};
+    return`<div class="pick-card">
+      <div class="pick-card-header">
+        <span class="pick-card-label">📋 ${pk.season} Round ${pk.round}</span>
+        <span class="pick-dir ${got?'pick-dir-got':'pick-dir-gave'}">${got?'You received':'You gave'}</span>
+      </div>
+      <div class="pick-row">Original owner: <strong>${esc(orig)}</strong></div>
+      ${via?`<div class="pick-row">Via: <strong>${esc(via)}</strong></div>`:''}
+      ${statusHTML}
+      ${draftedHTML}
+    </div>`;
+  };
+  document.getElementById('picks-content').innerHTML=
+    [...gotPicks.map(pk=>renderCard(pk,'got')),...gavePicks.map(pk=>renderCard(pk,'gave'))].join('')||
+    '<p style="color:#8892a0;font-size:.88rem">No pick details available for this trade.</p>';
 }
 
-// We need getCFScorePlayoff accessible in simulateBracket scope
-// Rebuild it as a standalone function using allMatchups
-function getCFScorePlayoff(entry, allMatchups, week, tradeWeek){
-  if(week<tradeWeek)return entry.points||0;
-  // Re-use same logic: find traded players on this roster, swap
-  // Since we don't have S.trade in this scope, pass through closure — handled below
-  return entry.points||0; // placeholder overridden below
-}
-
-// Override with closure approach — redefine simulateBracket inline in runSimulation
-// (We'll patch this by storing trade info on window)
-// Actually restructure: move simulateBracket inside runSimulation so it captures trade/allMatchups
-
+// ── Results rendering ──────────────────────────────────────────────────────
 function renderResults(d){
   const{totalActualW,totalActualL,totalCFW,totalCFL,actualPts,cfPts,ptsDiff,outcome,weekData,tradeWeek}=d;
   const maxPts=Math.max(...weekData.map(w=>Math.max(w.myActual,w.myCF,w.oppScore)),1);
@@ -540,41 +649,38 @@ function renderResults(d){
     </div>
     <div class="week-chart">
       ${weekData.map(w=>{
-        const aW=Math.round(w.myActual/maxPts*200);
-        const cW=Math.round(w.myCF/maxPts*200);
-        const pre=w.w<tradeWeek;
-        return `<div class="week-row" style="${pre?'opacity:.4':''}">
+        const aW=Math.round(w.myActual/maxPts*200),cW=Math.round(w.myCF/maxPts*200),pre=w.w<tradeWeek;
+        return`<div class="week-row" style="${pre?'opacity:.4':''}">
           <span class="week-num">Wk ${w.w}${pre?' ◂':''}</span>
           <div class="bar-wrap">
             <div class="bar bar-actual" style="width:${aW}px">${w.myActual.toFixed(0)}</div>
-            <div class="bar ${!pre&&w.myCF<w.myActual?'bar-worse':'bar-counterfactual'}" style="width:${cW}px">${w.myCF.toFixed(0)}</div>
+            <div class="bar ${!pre&&w.myCF<w.myActual?'bar-worse':'bar-cf'}" style="width:${cW}px">${w.myCF.toFixed(0)}</div>
           </div>
           <span class="${w.aW?'outcome-w':'outcome-l'}"><i class="ti ti-${w.aW?'circle-check':'circle-x'}"></i></span>
         </div>`;
       }).join('')}
     </div>
-    <p style="font-size:.72rem;color:#4a5568;margin-top:.75rem">◂ Pre-trade weeks (identical in both scenarios). CF scores swap traded players' actual weekly points across all rosters.</p>`;
+    <p style="font-size:.72rem;color:#4a5568;margin-top:.75rem">◂ Pre-trade weeks are identical in both scenarios.${S.isDynasty?' Pick-drafted players included in simulation where draft has occurred.':''}</p>`;
 }
 
 function renderPlayoffStandings(d,tid){
   const{actualS,cfS,myActualRank,myCFRank,myActualIn,myCFIn,playoffSpots}=d;
   let bc,bi,bt,bs;
   if(myActualIn&&myCFIn){
-    if(myActualRank<myCFRank){bc='in';bi='🟢';bt=`Trade improved your seeding: ${ordinal(myCFRank)} → ${ordinal(myActualRank)}`;bs='You made playoffs either way — but got a better seed.';}
-    else if(myActualRank>myCFRank){bc='neutral';bi='🟡';bt=`Trade hurt your seeding: ${ordinal(myCFRank)} → ${ordinal(myActualRank)}`;bs='You made playoffs either way — but would have had a better seed without the trade.';}
-    else{bc='neutral';bi='🟡';bt=`No seeding impact — ${ordinal(myActualRank)} seed either way`;bs='The trade didn\'t change your playoff position.';}
-  }else if(myActualIn&&!myCFIn){bc='in';bi='🟢';bt='The trade got you into the playoffs!';bs=`Without it you'd have finished ${ordinal(myCFRank)} — outside top ${playoffSpots}.`;}
-  else if(!myActualIn&&myCFIn){bc='out';bi='🔴';bt='The trade knocked you out of the playoffs';bs=`Without it you'd have finished ${ordinal(myCFRank)} — inside top ${playoffSpots}.`;}
+    if(myActualRank<myCFRank){bc='in';bi='🟢';bt=`Trade improved your seeding: ${ord(myCFRank)} → ${ord(myActualRank)}`;bs='You made playoffs either way — but got a better seed.';}
+    else if(myActualRank>myCFRank){bc='neutral';bi='🟡';bt=`Trade hurt your seeding: ${ord(myCFRank)} → ${ord(myActualRank)}`;bs='You made playoffs either way — but would have had a better seed without the trade.';}
+    else{bc='neutral';bi='🟡';bt=`No seeding impact — ${ord(myActualRank)} seed either way`;bs='The trade didn\'t change your playoff position.';}
+  }else if(myActualIn&&!myCFIn){bc='in';bi='🟢';bt='The trade got you into the playoffs!';bs=`Without it you'd have finished ${ord(myCFRank)} — outside top ${playoffSpots}.`;}
+  else if(!myActualIn&&myCFIn){bc='out';bi='🔴';bt='The trade knocked you out of the playoffs';bs=`Without it you'd have finished ${ord(myCFRank)} — inside top ${playoffSpots}.`;}
   else{
-    if(myActualRank<myCFRank){bc='neutral';bi='🟡';bt=`Trade improved standing: ${ordinal(myCFRank)} → ${ordinal(myActualRank)}`;bs='Neither scenario reached playoffs.';}
-    else if(myActualRank>myCFRank){bc='out';bi='🔴';bt=`Trade hurt standing: ${ordinal(myCFRank)} → ${ordinal(myActualRank)}`;bs='Neither scenario reached playoffs.';}
-    else{bc='neutral';bi='🟡';bt=`Finished ${ordinal(myActualRank)} either way`;bs='No playoff impact from this trade.';}
+    if(myActualRank<myCFRank){bc='neutral';bi='🟡';bt=`Trade improved standing: ${ord(myCFRank)} → ${ord(myActualRank)}`;bs='Neither scenario reached playoffs.';}
+    else if(myActualRank>myCFRank){bc='out';bi='🔴';bt=`Trade hurt standing: ${ord(myCFRank)} → ${ord(myActualRank)}`;bs='Neither scenario reached playoffs.';}
+    else{bc='neutral';bi='🟡';bt=`Finished ${ord(myActualRank)} either way`;bs='No standings impact from this trade.';}
   }
   const rd=myCFRank-myActualRank;
   const rch=rd===0?`<span class="change-same"><i class="ti ti-minus"></i> Same position</span>`
     :rd>0?`<span class="change-up"><i class="ti ti-arrow-up"></i> ${rd} spot${rd>1?'s':''} better with trade</span>`
     :`<span class="change-down"><i class="ti ti-arrow-down"></i> ${Math.abs(rd)} spot${Math.abs(rd)>1?'s':''} worse with trade</span>`;
-
   const tbl=(st,lbl,mc)=>`<div>
     <div class="section-label">${lbl}</div>
     <table class="standings-table"><thead><tr><th>#</th><th>Team</th><th>W–L</th><th>Pts</th></tr></thead><tbody>
@@ -586,12 +692,11 @@ function renderPlayoffStandings(d,tid){
     </tbody></table>
     <div style="font-size:.7rem;color:#4a5568;margin-top:4px">── playoff cutoff (top ${playoffSpots})</div>
   </div>`;
-
   document.getElementById(tid).innerHTML=`
-    <div class="playoff-banner ${bc}"><div class="icon">${bi}</div><div><div class="title">${bt}</div><div class="sub">${bs}</div></div></div>
+    <div class="playoff-banner ${bc}"><div class="p-icon">${bi}</div><div><div class="p-title">${bt}</div><div class="p-sub">${bs}</div></div></div>
     <div style="font-size:.85rem;margin-bottom:1rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
       <span style="color:#8892a0">Final position:</span>
-      <strong>${ordinal(myActualRank)}</strong> actual vs <strong style="color:#93c5fd">${ordinal(myCFRank)}</strong> no-trade — ${rch}
+      <strong>${ord(myActualRank)}</strong> actual vs <strong style="color:#93c5fd">${ord(myCFRank)}</strong> no-trade — ${rch}
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem" class="standings-cols">
       ${tbl(actualS,'Actual standings','me-actual')}
@@ -599,94 +704,96 @@ function renderPlayoffStandings(d,tid){
     </div>`;
 }
 
+function simulateBracket(playoffTeams, playoffWks, allMatchups, useCF, getCFScore){
+  const rounds=[];
+  let remaining=playoffTeams.map((t,i)=>({...t,seed:i+1}));
+  playoffWks.forEach((wk,ri)=>{
+    const mu=allMatchups[wk];
+    if(!mu?.length) return;
+    const pairs={};
+    mu.forEach(m=>{if(!pairs[m.matchup_id])pairs[m.matchup_id]=[];pairs[m.matchup_id].push(m);});
+    const roundMUs=[];
+    Object.values(pairs).forEach(pair=>{
+      if(pair.length!==2) return;
+      const [a,b]=pair;
+      const teamA=remaining.find(t=>t.rid===a.roster_id);
+      const teamB=remaining.find(t=>t.rid===b.roster_id);
+      if(!teamA||!teamB) return;
+      const aPts=useCF?(getCFScore(wk,a.roster_id)??a.points??0):(a.points||0);
+      const bPts=useCF?(getCFScore(wk,b.roster_id)??b.points??0):(b.points||0);
+      const aWins=aPts>=bPts;
+      roundMUs.push({
+        teamA:{...teamA,pts:aPts},teamB:{...teamB,pts:bPts},
+        winner:aWins?{...teamA,pts:aPts}:{...teamB,pts:bPts},
+        loser:aWins?{...teamB,pts:bPts}:{...teamA,pts:aPts}
+      });
+    });
+    if(roundMUs.length){rounds.push({week:wk,roundNum:ri+1,matchups:roundMUs});remaining=roundMUs.map(m=>m.winner);}
+  });
+  return{rounds,champion:remaining.length===1?remaining[0]:null};
+}
+
+function getBracketResult(bracket){
+  if(!bracket.rounds.length) return{inPlayoffs:false,roundsWon:0,champion:false};
+  let inPlayoffs=false,roundsWon=0;
+  bracket.rounds.forEach(r=>r.matchups.forEach(m=>{
+    if(m.teamA.rid===S.myRid||m.teamB.rid===S.myRid){inPlayoffs=true;if(m.winner.rid===S.myRid)roundsWon++;}
+  }));
+  return{inPlayoffs,roundsWon,champion:bracket.champion?.rid===S.myRid,totalRounds:bracket.rounds.length};
+}
+
 function renderBracket(actual,cf,tid){
   if(!actual.rounds.length&&!cf.rounds.length){
     document.getElementById(tid).innerHTML='<div style="color:#8892a0;font-size:.88rem">No playoff matchup data found for this league/season.</div>';
     return;
   }
-  const roundName=(n,total)=>{
-    const r=total-n+1;
-    if(r===1)return'Championship';
-    if(r===2)return'Semifinals';
-    if(r===3)return'Quarterfinals';
-    return`Round ${n}`;
-  };
-
-  const renderSide=(bracket,label,meClass)=>{
+  const rName=(n,total)=>{const r=total-n+1;return r===1?'Championship':r===2?'Semifinals':r===3?'Quarterfinals':`Round ${n}`;};
+  const side=(bracket,label)=>{
     const total=bracket.rounds.length;
     return`<div>
       <div class="bracket-col-title">${label}</div>
-      ${bracket.rounds.map(round=>`
-        <div class="bracket-round">
-          <div class="round-label">${roundName(round.roundNum,total)}</div>
-          ${round.matchups.map(m=>{
-            const aWin=m.winner.rid===m.teamA.rid;
-            const aIsMe=m.teamA.isMe,bIsMe=m.teamB.isMe;
-            return`<div class="matchup-box">
-              <div class="matchup-team ${aWin?'winner':'loser'} ${aIsMe?'me-team':''}">
-                <span><span class="seed-chip">${m.teamA.seed}</span>${esc(m.teamA.name)}${aIsMe?' ▶':''}</span>
-                <span class="matchup-pts ${aWin?'winner-pts':''}">${m.teamA.pts.toFixed(1)}</span>
-              </div>
-              <div class="matchup-team ${!aWin?'winner':'loser'} ${bIsMe?'me-team':''}">
-                <span><span class="seed-chip">${m.teamB.seed}</span>${esc(m.teamB.name)}${bIsMe?' ▶':''}</span>
-                <span class="matchup-pts ${!aWin?'winner-pts':''}">${m.teamB.pts.toFixed(1)}</span>
-              </div>
-            </div>`;
-          }).join('')}
-        </div>`).join('')}
+      ${bracket.rounds.map(round=>`<div class="bracket-round">
+        <div class="round-label">${rName(round.roundNum,total)}</div>
+        ${round.matchups.map(m=>{
+          const aW=m.winner.rid===m.teamA.rid;
+          return`<div class="matchup-box">
+            <div class="matchup-team ${aW?'winner':'loser'} ${m.teamA.isMe?'me-team':''}">
+              <span><span class="seed-chip">${m.teamA.seed}</span>${esc(m.teamA.name)}${m.teamA.isMe?' ▶':''}</span>
+              <span class="matchup-pts ${aW?'winner-pts':''}">${m.teamA.pts.toFixed(1)}</span>
+            </div>
+            <div class="matchup-team ${!aW?'winner':'loser'} ${m.teamB.isMe?'me-team':''}">
+              <span><span class="seed-chip">${m.teamB.seed}</span>${esc(m.teamB.name)}${m.teamB.isMe?' ▶':''}</span>
+              <span class="matchup-pts ${!aW?'winner-pts':''}">${m.teamB.pts.toFixed(1)}</span>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>`).join('')}
       ${bracket.champion?`<div class="champion-badge">🏆 Champion: ${esc(bracket.champion.name)}</div>`:''}
     </div>`;
   };
-
-  // Determine what happened to "me" in each bracket
-  const myActualResult=getBracketResult(actual,S.myRid);
-  const myCFResult=getBracketResult(cf,S.myRid);
-  const impactHTML=getBracketImpactBanner(myActualResult,myCFResult,actual,cf);
+  const ar=getBracketResult(actual),cr=getBracketResult(cf);
+  let bi,bc,bt,bs;
+  if(ar.champion&&cr.champion){bi='🟡';bc='neutral';bt='Champion either way';bs='The trade had no impact on the championship outcome.';}
+  else if(ar.champion&&!cr.champion){bi='🟢';bc='in';bt='The trade helped you win the championship!';bs=`Without it you'd have been eliminated in round ${cr.roundsWon+1}.`;}
+  else if(!ar.champion&&cr.champion){bi='🔴';bc='out';bt='The trade cost you the championship';bs=`Without the trade you would have won it all. With it, you were eliminated in round ${ar.roundsWon+1}.`;}
+  else if(ar.inPlayoffs&&cr.inPlayoffs){
+    if(ar.roundsWon>cr.roundsWon){bi='🟢';bc='in';bt=`Trade helped: ${ar.roundsWon} round${ar.roundsWon!==1?'s':''} won vs ${cr.roundsWon} without`;bs='The trade got you further in the playoffs.';}
+    else if(ar.roundsWon<cr.roundsWon){bi='🔴';bc='out';bt=`Trade hurt: ${ar.roundsWon} round${ar.roundsWon!==1?'s':''} won vs ${cr.roundsWon} without`;bs='You would have gone further without the trade.';}
+    else{bi='🟡';bc='neutral';bt=`Same result — ${ar.roundsWon} round${ar.roundsWon!==1?'s':''} won either way`;bs='The trade didn\'t change how far you went.';}
+  }else if(ar.inPlayoffs&&!cr.inPlayoffs){bi='🟢';bc='in';bt='Trade got you into the playoffs';bs='Without it you wouldn\'t have qualified.';}
+  else if(!ar.inPlayoffs&&cr.inPlayoffs){bi='🔴';bc='out';bt='Trade kept you out of the playoffs';bs='Without it you would have qualified.';}
+  else{bi='🟡';bc='neutral';bt='Neither scenario reached the playoffs';bs='The trade didn\'t affect your playoff chances.';}
 
   document.getElementById(tid).innerHTML=`
-    ${impactHTML}
+    <div class="playoff-banner ${bc}"><div class="p-icon">${bi}</div><div><div class="p-title">${bt}</div><div class="p-sub">${bs}</div></div></div>
     <div class="bracket-wrap">
-      ${renderSide(actual,'Actual bracket (with trade)','me-actual')}
-      ${renderSide(cf,'What-if bracket (no trade)','me-cf')}
+      ${side(actual,'Actual (with trade)')}
+      ${side(cf,'What-if (no trade)')}
     </div>
-    <p style="font-size:.72rem;color:#4a5568;margin-top:.75rem">* Playoff scores use actual weekly points with counterfactual roster adjustments applied. ▶ = you</p>`;
+    <p style="font-size:.72rem;color:#4a5568;margin-top:.75rem">* Bracket uses actual playoff week scores with counterfactual roster adjustments applied. ▶ = you</p>`;
 }
 
-function getBracketResult(bracket,myRid){
-  if(!bracket.rounds.length)return{inPlayoffs:false,roundsWon:0,champion:false};
-  // Check if I appear at all
-  let inPlayoffs=false,roundsWon=0,eliminated=false;
-  bracket.rounds.forEach(round=>{
-    round.matchups.forEach(m=>{
-      if(m.teamA.rid===myRid||m.teamB.rid===myRid){
-        inPlayoffs=true;
-        if(m.winner.rid===myRid)roundsWon++;
-        else eliminated=true;
-      }
-    });
-  });
-  const champ=bracket.champion?.rid===myRid;
-  return{inPlayoffs,roundsWon,champion:champ,totalRounds:bracket.rounds.length};
-}
-
-function getBracketImpactBanner(actual,cf,actualBracket,cfBracket){
-  let icon,cls,title,sub;
-  if(actual.champion&&cf.champion){icon='🟡';cls='neutral';title='Champion either way!';sub='The trade didn\'t change the ultimate outcome — you won the championship in both scenarios.';}
-  else if(actual.champion&&!cf.champion){icon='🟢';cls='in';title='The trade helped you win the championship!';sub=`Without it you would have been eliminated in round ${cf.roundsWon+1}.`;}
-  else if(!actual.champion&&cf.champion){icon='🔴';cls='out';title='The trade cost you the championship';sub=`Without the trade you would have won it all. With it, you were eliminated in round ${actual.roundsWon+1}.`;}
-  else if(actual.inPlayoffs&&cf.inPlayoffs){
-    if(actual.roundsWon>cf.roundsWon){icon='🟢';cls='in';title=`Trade helped: went ${actual.roundsWon} round${actual.roundsWon!==1?'s':''} vs ${cf.roundsWon} without`;sub='The trade got you further in the playoffs.';}
-    else if(actual.roundsWon<cf.roundsWon){icon='🔴';cls='out';title=`Trade hurt: went ${actual.roundsWon} round${actual.roundsWon!==1?'s':''} vs ${cf.roundsWon} without`;sub='You would have gone further in the playoffs without the trade.';}
-    else{icon='🟡';cls='neutral';title=`Same playoff result either way (${actual.roundsWon} round${actual.roundsWon!==1?'s':''} won)`;sub='The trade didn\'t change how far you went in the playoffs.';}
-  }else if(actual.inPlayoffs&&!cf.inPlayoffs){icon='🟢';cls='in';title='Trade got you into the playoffs';sub='Without the trade you wouldn\'t have qualified for the postseason.';}
-  else if(!actual.inPlayoffs&&cf.inPlayoffs){icon='🔴';cls='out';title='Trade kept you out of the playoffs';sub='Without the trade you would have qualified and played in the postseason.';}
-  else{icon='🟡';cls='neutral';title='Neither scenario reached the playoffs';sub='The trade didn\'t affect your playoff chances.';}
-  return`<div class="playoff-banner ${cls}" style="margin-bottom:1rem"><div class="icon">${icon}</div><div><div class="title">${title}</div><div class="sub">${sub}</div></div></div>`;
-}
-
-function ordinal(n){const s=['th','st','nd','rd'],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0]);}
-
-// Manual simulation
+// ── Manual simulation ──────────────────────────────────────────────────────
 function runManualSim(){
   const totWks=parseInt(document.getElementById('manual-total-weeks').value)||13;
   const tradeWk=parseInt(document.getElementById('manual-trade-week').value)||5;
@@ -700,32 +807,27 @@ function runManualSim(){
   hideErr('manual-error');
   let aW=0,aL=0,cfW=0,cfL=0,aPts=0,cfPts=0;const wd=[];
   for(let i=0;i<totWks;i++){
-    const my=myScores[i]||0,opp=oppScores[i]||0;
-    let delta=0;
-    if(i>=tradeWk-1){
-      recPts.forEach(pts=>{delta-=(pts[i-(tradeWk-1)]||0);});
-      gavePts.forEach(pts=>{delta+=(pts[i-(tradeWk-1)]||0);});
-    }
+    const my=myScores[i]||0,opp=oppScores[i]||0;let delta=0;
+    if(i>=tradeWk-1){recPts.forEach(pts=>{delta-=(pts[i-(tradeWk-1)]||0);});gavePts.forEach(pts=>{delta+=(pts[i-(tradeWk-1)]||0);});}
     const myCF=Math.max(0,my+delta);
-    aPts+=my;cfPts+=myCF;
-    if(my>opp)aW++;else aL++;
-    if(myCF>opp)cfW++;else cfL++;
+    aPts+=my;cfPts+=myCF;if(my>opp)aW++;else aL++;if(myCF>opp)cfW++;else cfL++;
     wd.push({w:i+1,myActual:my,myCF,oppScore:opp,aW:my>opp,cfW:myCF>opp});
   }
-  const ptsDiff=(aPts-cfPts).toFixed(1);
-  const outcome=aW>cfW?'win':aW<cfW?'loss':'neutral';
+  const ptsDiff=(aPts-cfPts).toFixed(1),outcome=aW>cfW?'win':aW<cfW?'loss':'neutral';
   document.getElementById('manual-results').classList.remove('hidden');
+  // Temporarily set S.isDynasty false for manual render
+  const wasDyn=S.isDynasty;S.isDynasty=false;
   renderResults({totalActualW:aW,totalActualL:aL,totalCFW:cfW,totalCFL:cfL,actualPts:aPts,cfPts,ptsDiff,outcome,weekData:wd,tradeWeek:tradeWk});
+  S.isDynasty=wasDyn;
   document.getElementById('manual-results-content').innerHTML=document.getElementById('results-content').innerHTML;
-  // Rough playoff estimate
-  const aRank=Math.max(1,Math.round((1-(aW/totWks))*teams));
-  const cfRank=Math.max(1,Math.round((1-(cfW/totWks))*teams));
+  const aRank=Math.max(1,Math.min(teams,Math.round((1-(aW/totWks))*teams)));
+  const cfRank=Math.max(1,Math.min(teams,Math.round((1-(cfW/totWks))*teams)));
   const aIn=aRank<=spots,cfIn=cfRank<=spots;
   document.getElementById('manual-playoff-content').innerHTML=`
-    <div class="info-box"><i class="ti ti-info-circle"></i> Manual mode estimates playoff position from your record vs league size. Use Fetch from Sleeper for full accuracy.</div>
+    <div class="info-box"><i class="ti ti-info-circle"></i> Playoff position is estimated from your record. Use Fetch from Sleeper for full accuracy &amp; bracket simulation.</div>
     <div class="result-grid">
-      <div class="metric"><div class="metric-label">Est. finish (actual)</div><div class="metric-value" style="color:${aIn?'#86efac':'#fca5a5'}">${ordinal(aRank)}</div><div class="metric-sub">${aIn?'✓ In playoffs':'✗ Missed playoffs'}</div></div>
-      <div class="metric"><div class="metric-label">Est. finish (no trade)</div><div class="metric-value" style="color:${cfIn?'#86efac':'#fca5a5'}">${ordinal(cfRank)}</div><div class="metric-sub">${cfIn?'✓ In playoffs':'✗ Missed playoffs'}</div></div>
+      <div class="metric"><div class="metric-label">Est. finish (actual)</div><div class="metric-value" style="color:${aIn?'#86efac':'#fca5a5'}">${ord(aRank)}</div><div class="metric-sub">${aIn?'✓ In playoffs':'✗ Missed playoffs'}</div></div>
+      <div class="metric"><div class="metric-label">Est. finish (no trade)</div><div class="metric-value" style="color:${cfIn?'#86efac':'#fca5a5'}">${ord(cfRank)}</div><div class="metric-sub">${cfIn?'✓ In playoffs':'✗ Missed playoffs'}</div></div>
     </div>`;
 }
 
@@ -735,6 +837,7 @@ function addRow(cid,nc,pc){
   row.innerHTML=`<input type="text" placeholder="Player name" class="${nc}"/><input type="text" placeholder="Wk pts (comma sep)" class="${pc}" style="max-width:160px"/><button onclick="this.parentElement.remove()" style="background:none;border:none;color:#4a5568;cursor:pointer;padding:4px"><i class="ti ti-trash"></i></button>`;
   el.appendChild(row);
 }
+function ord(n){const s=['th','st','nd','rd'],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0]);}
 function resetToTrades(){document.getElementById('card-results').classList.add('hidden');setStep(3);}
 function showErr(id,msg){const el=document.getElementById(id);el.classList.remove('hidden');el.querySelector('span').textContent=msg;}
 function hideErr(id){document.getElementById(id).classList.add('hidden');}
