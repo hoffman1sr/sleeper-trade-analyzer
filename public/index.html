@@ -262,25 +262,42 @@ function isDynastyLeague(league){
 // ── Draft data (dynasty only) ──────────────────────────────────────────────
 async function fetchDraftData(leagueId){
   try{
-    // Dynasty leagues chain year-to-year via previous_league_id
-    // Walk back up to 5 seasons to collect all drafts
     const allDrafts=[];
-    let lid=leagueId;
-    for(let i=0;i<6;i++){
+    const visitedLeagues=new Set();
+
+    async function fetchLeagueDrafts(lid){
+      if(!lid||visitedLeagues.has(lid)) return null;
+      visitedLeagues.add(lid);
+      let leagueInfo=null;
       try{
         const drafts=await api(`/league/${lid}/drafts`);
         for(const d of (drafts||[])){
-          try{
-            const picks=await api(`/draft/${d.draft_id}/picks`);
-            allDrafts.push({...d,picks:picks||[]});
-          }catch(e){allDrafts.push({...d,picks:[]});}
+          if(allDrafts.find(x=>x.draft_id===d.draft_id)) continue;
+          try{const picks=await api(`/draft/${d.draft_id}/picks`);allDrafts.push({...d,picks:picks||[]});}
+          catch(e){allDrafts.push({...d,picks:[]});}
         }
-        // Get previous season's league to keep walking back
-        const leagueInfo=await api(`/league/${lid}`);
-        if(!leagueInfo.previous_league_id) break;
-        lid=leagueInfo.previous_league_id;
-      }catch(e){break;}
+        leagueInfo=await api(`/league/${lid}`);
+      }catch(e){}
+      return leagueInfo;
     }
+
+    // Walk backwards through previous seasons
+    let lid=leagueId;
+    for(let i=0;i<6;i++){
+      const info=await fetchLeagueDrafts(lid);
+      if(!info?.previous_league_id) break;
+      lid=info.previous_league_id;
+    }
+
+    // Also fetch all leagues the user is in across seasons — covers forward years
+    // S.leagues already has all user leagues; fetch drafts for any we haven't visited
+    for(const league of (S.leagues||[])){
+      if(visitedLeagues.has(league.league_id)) continue;
+      // Only bother if it's the same league name/lineage (same league_id prefix won't work,
+      // but we can check if it shares a roster count and is linked)
+      await fetchLeagueDrafts(league.league_id);
+    }
+
     return{drafts:allDrafts};
   }catch(e){return{drafts:[]};}
 }
