@@ -262,17 +262,27 @@ function isDynastyLeague(league){
 // ── Draft data (dynasty only) ──────────────────────────────────────────────
 async function fetchDraftData(leagueId){
   try{
-    const drafts=await api(`/league/${leagueId}/drafts`);
-    if(!drafts?.length) return{drafts:[],pickMap:{}};
-    const draftMeta=[];
-    for(const d of drafts){
+    // Dynasty leagues chain year-to-year via previous_league_id
+    // Walk back up to 5 seasons to collect all drafts
+    const allDrafts=[];
+    let lid=leagueId;
+    for(let i=0;i<6;i++){
       try{
-        const picks=await api(`/draft/${d.draft_id}/picks`);
-        draftMeta.push({...d,picks:picks||[]});
-      }catch(e){draftMeta.push({...d,picks:[]});}
+        const drafts=await api(`/league/${lid}/drafts`);
+        for(const d of (drafts||[])){
+          try{
+            const picks=await api(`/draft/${d.draft_id}/picks`);
+            allDrafts.push({...d,picks:picks||[]});
+          }catch(e){allDrafts.push({...d,picks:[]});}
+        }
+        // Get previous season's league to keep walking back
+        const leagueInfo=await api(`/league/${lid}`);
+        if(!leagueInfo.previous_league_id) break;
+        lid=leagueInfo.previous_league_id;
+      }catch(e){break;}
     }
-    return{drafts:draftMeta};
-  }catch(e){return{drafts:[],pickMap:{}};}
+    return{drafts:allDrafts};
+  }catch(e){return{drafts:[]};}
 }
 
 // Match a draft pick transaction object → the player selected with it
