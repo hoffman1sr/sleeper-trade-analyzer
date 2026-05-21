@@ -381,9 +381,8 @@ function renderPickPill(pk){
   const resolved=S.isDynasty?resolvePickToPlayer(pk,S.draftData):null;
   const yr=new Date().getFullYear();
   const future=parseInt(pk.season)>yr;
-  const orig=S.rosterMap[pk.original_roster_id]?.name||`Team ${pk.original_roster_id}`;
-  // Show original owner only if the pick was traded (not originally theirs)
-  const showOrig=pk.original_roster_id&&pk.original_roster_id!==pk.owner_roster_id;
+  const orig=S.rosterMap[pk.roster_id]?.name||`Team ${pk.roster_id}`; // roster_id = original owner
+  const showOrig=pk.roster_id&&pk.roster_id!==pk.owner_id;
   const label=pickLabel(pk,resolved);
   let sub='';
   if(future){
@@ -409,8 +408,8 @@ function renderTrades(trades){
       const myIdx=t.roster_ids.indexOf(S.myRid),theirIdx=myIdx===0?1:0;
       const gotPlayers=t.adds?Object.entries(t.adds).filter(([,r])=>r===S.myRid).map(([p])=>P[p]?.full_name||p):[];
       const gavePlayers=t.drops?Object.entries(t.drops).filter(([,r])=>r===S.myRid).map(([p])=>P[p]?.full_name||p):[];
-      const gotPicks=S.isDynasty?(t.draft_picks||[]).filter(pk=>pk.owner_roster_id===S.myRid):[];
-      const gavePicks=S.isDynasty?(t.draft_picks||[]).filter(pk=>pk.previous_owner_roster_id===S.myRid):[];
+      const gotPicks=S.isDynasty?(t.draft_picks||[]).filter(pk=>pk.owner_id===S.myRid):[];
+      const gavePicks=S.isDynasty?(t.draft_picks||[]).filter(pk=>pk.previous_owner_id===S.myRid):[];
       const opp=S.rosterMap[t.roster_ids[theirIdx]]?.name||'Opponent';
       const hasContent=gotPlayers.length||gavePlayers.length||gotPicks.length||gavePicks.length;
       return`<div class="trade-card" onclick="selectTrade(${i})">
@@ -464,8 +463,8 @@ async function runSimulation(){
   let gotPicks=[],gavePicks=[],resolvedGotPicks=[],resolvedGavePicks=[];
   let picksGotPlayerIds=[],picksGavePlayerIds=[];
   if(S.isDynasty){
-    gotPicks=(trade.draft_picks||[]).filter(pk=>pk.owner_roster_id===S.myRid);
-    gavePicks=(trade.draft_picks||[]).filter(pk=>pk.previous_owner_roster_id===S.myRid);
+    gotPicks=(trade.draft_picks||[]).filter(pk=>pk.owner_id===S.myRid);
+    gavePicks=(trade.draft_picks||[]).filter(pk=>pk.previous_owner_id===S.myRid);
     resolvedGotPicks=gotPicks.map(pk=>({...pk,resolved:resolvePickToPlayer(pk,S.draftData)}));
     resolvedGavePicks=gavePicks.map(pk=>({...pk,resolved:resolvePickToPlayer(pk,S.draftData)}));
     picksGotPlayerIds=resolvedGotPicks.filter(p=>p.resolved).map(p=>p.resolved.player_id);
@@ -603,9 +602,9 @@ function renderPickDetails(gotPicks, gavePicks){
   const renderCard=(pk,dir)=>{
     const got=dir==='got';
     const future=parseInt(pk.season)>yr;
-    const orig=S.rosterMap[pk.original_roster_id]?.name||`Team ${pk.original_roster_id}`;
-    const via=pk.previous_owner_roster_id&&pk.previous_owner_roster_id!==pk.original_roster_id
-      ?`Via ${S.rosterMap[pk.previous_owner_roster_id]?.name||`Team ${pk.previous_owner_roster_id}`}`:null;
+    const orig=S.rosterMap[pk.roster_id]?.name||`Team ${pk.roster_id}`;
+    const via=pk.previous_owner_id&&pk.previous_owner_id!==pk.roster_id
+      ?`Via ${S.rosterMap[pk.previous_owner_id]?.name||`Team ${pk.previous_owner_id}`}`:null;
     const label=pickLabel(pk, pk.resolved);
     let statusHTML='',draftedHTML='';
     if(future){
