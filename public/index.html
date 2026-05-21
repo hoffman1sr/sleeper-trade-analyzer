@@ -366,17 +366,33 @@ async function selectLeague(idx){
   }
 }
 
-function renderPickPill(pk, direction){
-  const P=window._P||{};
+function pickLabel(pk, resolved){
+  // Format: "2025 1.02" if resolved (round.pick_within_round), else "2025 2nd"
+  const roundSuffix=n=>['th','st','nd','rd'][((n%100-20)%10)||n%100>10?0:n%10]||'th';
+  if(resolved&&resolved.pick_no&&resolved.picks_per_round){
+    const within=((resolved.pick_no-1)%resolved.picks_per_round)+1;
+    const pad=String(within).padStart(2,'0');
+    return`${pk.season} ${pk.round}.${pad}`;
+  }
+  return`${pk.season} ${pk.round}${roundSuffix(pk.round)}`;
+}
+
+function renderPickPill(pk){
   const resolved=S.isDynasty?resolvePickToPlayer(pk,S.draftData):null;
   const yr=new Date().getFullYear();
   const future=parseInt(pk.season)>yr;
   const orig=S.rosterMap[pk.original_roster_id]?.name||`Team ${pk.original_roster_id}`;
-  const label=`${pk.season} Rd ${pk.round}`;
+  // Show original owner only if the pick was traded (not originally theirs)
+  const showOrig=pk.original_roster_id&&pk.original_roster_id!==pk.owner_roster_id;
+  const label=pickLabel(pk,resolved);
   let sub='';
-  if(future) sub='<span style="color:#f59e0b"> · future</span>';
-  else if(resolved) sub=`<span style="color:#86efac"> · ${esc(resolved.name)}</span>`;
-  else sub='<span style="color:#8892a0"> · pick used</span>';
+  if(future){
+    sub=`<span style="color:#f59e0b"> · ${showOrig?esc(orig):'future pick'}</span>`;
+  } else if(resolved){
+    sub=`<span style="color:#86efac"> · ${esc(resolved.name)}</span>`;
+  } else {
+    sub=`<span style="color:#8892a0"> · ${showOrig?esc(orig)+' (unresolved)':'unresolved'}</span>`;
+  }
   return`<div class="pick-pill"><i class="ti ti-ticket" style="font-size:.7rem"></i>${label}${sub}</div>`;
 }
 
@@ -590,18 +606,21 @@ function renderPickDetails(gotPicks, gavePicks){
     const orig=S.rosterMap[pk.original_roster_id]?.name||`Team ${pk.original_roster_id}`;
     const via=pk.previous_owner_roster_id&&pk.previous_owner_roster_id!==pk.original_roster_id
       ?`Via ${S.rosterMap[pk.previous_owner_roster_id]?.name||`Team ${pk.previous_owner_roster_id}`}`:null;
+    const label=pickLabel(pk, pk.resolved);
     let statusHTML='',draftedHTML='';
     if(future){
       statusHTML=`<div class="pick-status-pending"><i class="ti ti-clock"></i> Draft not yet held — pick is pending</div>`;
     } else if(pk.resolved){
       const r=pk.resolved;
-      statusHTML=`<div class="pick-status-resolved"><i class="ti ti-circle-check"></i> Resolved — pick #${r.pick_no} used</div>`;
+      const within=r.within_round?String(r.within_round).padStart(2,'0'):null;
+      const pickStr=within?`${r.round}.${within} (pick #${r.pick_no})`:`pick #${r.pick_no}`;
+      statusHTML=`<div class="pick-status-resolved"><i class="ti ti-circle-check"></i> Resolved — ${pickStr}</div>`;
       draftedHTML=`<div class="drafted-player-box">
         <div class="drafted-player-name">${esc(r.name)}</div>
-        <div class="drafted-player-meta">${r.position||''}${r.team?' · '+r.team:''} · Pick #${r.pick_no} (Round ${r.round})</div>
+        <div class="drafted-player-meta">${r.position||''}${r.team?' · '+r.team:''} · ${label}</div>
         <div class="drafted-sim-note"><i class="ti ti-info-circle"></i> ${got
-          ?`${esc(r.name)}'s weekly points included in what-if simulation (you wouldn't have had them)`
-          :`${esc(r.name)}'s weekly points included in what-if simulation (you would have kept this pick)`
+          ?`${esc(r.name)}'s weekly points included in what-if (you wouldn't have had them)`
+          :`${esc(r.name)}'s weekly points included in what-if (you would have kept this pick)`
         }</div>
       </div>`;
     } else {
@@ -609,7 +628,7 @@ function renderPickDetails(gotPicks, gavePicks){
     }
     return`<div class="pick-card">
       <div class="pick-card-header">
-        <span class="pick-card-label">📋 ${pk.season} Round ${pk.round}</span>
+        <span class="pick-card-label">📋 ${label}</span>
         <span class="pick-dir ${got?'pick-dir-got':'pick-dir-gave'}">${got?'You received':'You gave'}</span>
       </div>
       <div class="pick-row">Original owner: <strong>${esc(orig)}</strong></div>
