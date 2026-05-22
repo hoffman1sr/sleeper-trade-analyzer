@@ -45,7 +45,6 @@
   .trade-arrow{color:#4a5568;font-size:1.2rem;text-align:center;padding-top:18px}
   .player-name{font-weight:500;font-size:.88rem;margin-bottom:2px}
   .pick-pill{display:inline-flex;align-items:center;gap:4px;background:#2d1b69;border:1px solid #4c1d95;border-radius:6px;padding:3px 8px;font-size:.75rem;color:#a78bfa;margin-bottom:3px}
-  .pick-result-inline{color:#8892a0;font-size:.7rem}
   .result-grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1.25rem}
   .result-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.25rem}
   .metric{background:#0f1318;border-radius:10px;padding:1rem;text-align:center}
@@ -77,7 +76,6 @@
   .info-box{background:#1e2d45;border:1px solid #1e3a5f;border-radius:8px;padding:.85rem 1rem;font-size:.82rem;color:#93c5fd;margin-bottom:1rem;display:flex;gap:8px}
   .section-divider{border:none;border-top:1px solid #2a3142;margin:1.25rem 0}
   .hidden{display:none!important}
-  /* Pick cards */
   .pick-card{background:#0f1318;border:1px solid #4c1d95;border-radius:10px;padding:1rem;margin-bottom:.75rem}
   .pick-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem}
   .pick-card-label{font-size:.9rem;font-weight:600;color:#a78bfa}
@@ -93,7 +91,6 @@
   .drafted-player-name{font-weight:600;font-size:.88rem}
   .drafted-player-meta{font-size:.72rem;color:#8892a0;margin-top:2px}
   .drafted-sim-note{font-size:.72rem;color:#60a5fa;margin-top:4px;display:flex;align-items:center;gap:4px}
-  /* Playoff */
   .playoff-banner{border-radius:10px;padding:1rem 1.25rem;margin-bottom:1rem;display:flex;align-items:center;gap:12px;font-size:.9rem}
   .playoff-banner.in{background:#0d2b1a;border:1px solid #166534}
   .playoff-banner.out{background:#2a0d0d;border:1px solid #7f1d1d}
@@ -111,7 +108,6 @@
   .seed-in{background:#14532d;color:#86efac}
   .seed-out{background:#2a0d0d;color:#fca5a5}
   .section-label{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#4a5568;margin:1rem 0 .5rem}
-  /* Bracket */
   .bracket-wrap{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:1rem}
   .bracket-col-title{font-size:.78rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#8892a0;margin-bottom:.75rem;text-align:center}
   .bracket-round{margin-bottom:1rem}
@@ -128,6 +124,13 @@
   .change-up{color:#86efac;font-size:.75rem}
   .change-down{color:#fca5a5;font-size:.75rem}
   .change-same{color:#8892a0;font-size:.75rem}
+  /* Debug panel */
+  .debug-panel{background:#0a0d12;border:1px solid #2a3142;border-radius:8px;padding:1rem;margin-top:1rem;font-family:monospace;font-size:.72rem;color:#4a5568;max-height:200px;overflow-y:auto;display:none}
+  .debug-panel.visible{display:block}
+  .debug-line{margin-bottom:3px;word-break:break-all}
+  .debug-line.ok{color:#86efac}
+  .debug-line.warn{color:#f59e0b}
+  .debug-line.err{color:#fca5a5}
   @media(max-width:640px){
     .result-grid-4{grid-template-columns:1fr 1fr}
     .bracket-wrap,.standings-cols{grid-template-columns:1fr!important}
@@ -171,7 +174,6 @@
 
     <div class="card hidden" id="card-trades">
       <div class="card-title"><i class="ti ti-arrows-exchange"></i> Select a trade to analyze</div>
-      <div class="info-box"><i class="ti ti-info-circle"></i> Dynasty leagues show pick details &amp; draft outcomes inline on each trade card.</div>
       <div id="trades-list"></div>
     </div>
 
@@ -235,53 +237,70 @@
 const PROXY='/api/sleeper';
 let S={userId:null,leagues:[],league:null,trade:null,rosterMap:{},myRid:null,isDynasty:false,draftData:null};
 
+// ── Debug logger ───────────────────────────────────────────────────────────
+// Set DEBUG=true in console to enable: window._DEBUG=true
+function dbg(msg, type='info'){
+  if(!window._DEBUG) return;
+  console.log(`[TradeAnalyzer] ${msg}`);
+}
+
 function switchTab(t){
   document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',i===(t==='fetch'?0:1)));
   document.getElementById('tab-fetch').classList.toggle('hidden',t!=='fetch');
   document.getElementById('tab-manual').classList.toggle('hidden',t!=='manual');
 }
+
 function setStep(n){
   for(let i=1;i<=4;i++){
     const el=document.getElementById('step'+i);
-    el.classList.toggle('active',i===n);el.classList.toggle('done',i<n);
-    if(i<n)el.querySelector('.step-num').innerHTML='<i class="ti ti-check" style="font-size:.65rem"></i>';
-    else if(i>n)el.querySelector('.step-num').textContent=i;
+    el.classList.toggle('active',i===n);
+    el.classList.toggle('done',i<n);
+    if(i<n) el.querySelector('.step-num').innerHTML='<i class="ti ti-check" style="font-size:.65rem"></i>';
+    else if(i>n) el.querySelector('.step-num').textContent=i;
   }
 }
+
 async function api(path){
   const r=await fetch(`${PROXY}${path}`);
-  if(!r.ok)throw new Error(`API ${r.status}: ${path}`);
+  if(!r.ok) throw new Error(`API ${r.status}: ${path}`);
   return r.json();
 }
 
-// Dynasty: detect league type (2 = dynasty/keeper in Sleeper)
 function isDynastyLeague(league){
-  return league.settings?.type===2||league.settings?.type==='2';
+  return league.settings?.type===2 || league.settings?.type==='2';
 }
 
-// ── Draft data (dynasty only) ──────────────────────────────────────────────
+// ── BUG 3 FIX: fetchDraftData walks both backward AND forward ──────────────
 async function fetchDraftData(leagueId){
   try{
     const allDrafts=[];
     const visitedLeagues=new Set();
 
     async function fetchLeagueDrafts(lid){
-      if(!lid||visitedLeagues.has(lid)) return null;
+      if(!lid || visitedLeagues.has(lid)) return null;
       visitedLeagues.add(lid);
       let leagueInfo=null;
       try{
         const drafts=await api(`/league/${lid}/drafts`);
         for(const d of (drafts||[])){
           if(allDrafts.find(x=>x.draft_id===d.draft_id)) continue;
-          try{const picks=await api(`/draft/${d.draft_id}/picks`);allDrafts.push({...d,picks:picks||[]});}
-          catch(e){allDrafts.push({...d,picks:[]});}
+          try{
+            const picks=await api(`/draft/${d.draft_id}/picks`);
+            // Attach the draft-level season and settings to each draft object
+            allDrafts.push({...d, picks: picks||[]});
+            dbg(`Fetched draft ${d.draft_id} season=${d.season} picks=${picks?.length}`);
+          }catch(e){
+            allDrafts.push({...d, picks:[]});
+          }
         }
         leagueInfo=await api(`/league/${lid}`);
-      }catch(e){}
+      }catch(e){
+        dbg(`Could not fetch league ${lid}: ${e.message}`, 'warn');
+      }
       return leagueInfo;
     }
 
-    // Walk backwards through previous seasons
+    // Walk BACKWARD through previous seasons (up to 6 years)
     let lid=leagueId;
     for(let i=0;i<6;i++){
       const info=await fetchLeagueDrafts(lid);
@@ -289,37 +308,172 @@ async function fetchDraftData(leagueId){
       lid=info.previous_league_id;
     }
 
-    // Also fetch all leagues the user is in across seasons — covers forward years
-    // S.leagues already has all user leagues; fetch drafts for any we haven't visited
-    for(const league of (S.leagues||[])){
-      if(visitedLeagues.has(league.league_id)) continue;
-      // Only bother if it's the same league name/lineage (same league_id prefix won't work,
-      // but we can check if it shares a roster count and is linked)
-      await fetchLeagueDrafts(league.league_id);
+    // Walk FORWARD through future seasons (up to 4 years ahead)
+    // Uses the user's known leagues list — covers picks that resolve in later seasons
+    const currentSeason=parseInt(S.league.season);
+    for(let yr=currentSeason+1; yr<=currentSeason+4; yr++){
+      try{
+        const ls=await api(`/user/${S.userId}/leagues/nfl/${yr}`);
+        for(const l of (ls||[])){
+          if(visitedLeagues.has(l.league_id)) continue;
+          dbg(`Fetching forward season ${yr} league ${l.league_id}`);
+          await fetchLeagueDrafts(l.league_id);
+        }
+      }catch(e){}
     }
 
-    return{drafts:allDrafts};
-  }catch(e){return{drafts:[]};}
+    dbg(`Total drafts collected: ${allDrafts.length}`);
+    return {drafts: allDrafts};
+  }catch(e){
+    dbg(`fetchDraftData error: ${e.message}`, 'err');
+    return {drafts:[]};
+  }
 }
 
-// Match a draft pick transaction object → the player selected with it
+// ── BUG 1 + BUG 2 FIX: resolvePickToPlayer ────────────────────────────────
+// Bug 1: Sleeper draft pick objects use `roster_id` for the pick's original
+//        slot owner — after a trade the actual user who picks is in `picked_by`
+//        (a user_id string) or the slot mapping changed. We now try multiple
+//        matching strategies in order of reliability.
+// Bug 2: picks_per_round was never set on the returned object. Now we derive
+//        it from draft.settings.teams or by counting round-1 picks.
 function resolvePickToPlayer(pk, draftData){
   if(!draftData?.drafts?.length) return null;
   const P=window._P||{};
-  // Match by season and round and who ended up owning it (owner_roster_id)
   const targetSeason=String(pk.season);
-  const targetRound=pk.round;
-  const ownerRid=pk.owner_roster_id; // roster that received this pick in the trade
+  const targetRound=Number(pk.round);
+  // owner_roster_id = the roster that received this pick in the trade
+  const ownerRid=pk.owner_roster_id;
+  const ownerRidStr=String(ownerRid);
+
+  dbg(`Resolving pick: season=${targetSeason} round=${targetRound} owner_roster_id=${ownerRid}`);
+
   for(const draft of draftData.drafts){
-    if(String(draft.season)!==targetSeason) continue;
-    // Find the pick in this draft used by ownerRid in the target round
-    const match=draft.picks.find(p=>p.round===targetRound&&(p.roster_id===ownerRid||p.picked_by===String(ownerRid)));
+    // Match season — draft object has a `season` field set by Sleeper
+    if(String(draft.season) !== targetSeason) continue;
+    if(!draft.picks?.length) continue;
+
+    dbg(`Checking draft ${draft.draft_id} (${draft.picks.length} picks)`);
+
+    // Derive picks_per_round for label formatting (Bug 2 fix)
+    const picksPerRound=
+      draft.settings?.teams ||
+      draft.settings?.slots_count ||
+      draft.picks.filter(p=>p.round===1).length ||
+      12;
+
+    // Strategy 1: roster_id on the pick matches owner_roster_id
+    // This works when the pick was NOT re-traded and Sleeper kept the slot assignment
+    let match=draft.picks.find(p=>
+      Number(p.round)===targetRound &&
+      (Number(p.roster_id)===Number(ownerRid) || String(p.roster_id)===ownerRidStr)
+    );
+
+    // Strategy 2: picked_by (user_id string) matches the owner's user_id
+    // Sleeper sets picked_by = user_id of who actually made the pick
+    if(!match){
+      // Look up the user_id for this roster
+      const rosterEntry=S.rosterMap[ownerRid];
+      if(rosterEntry?.owner_id){
+        const ownerUserId=String(rosterEntry.owner_id);
+        match=draft.picks.find(p=>
+          Number(p.round)===targetRound &&
+          String(p.picked_by)===ownerUserId
+        );
+        if(match) dbg(`Strategy 2 (picked_by user_id) matched pick_no=${match.pick_no}`);
+      }
+    }
+
+    // Strategy 3: use the draft's slot_to_roster_id map if present
+    // Some league types expose this on the draft metadata
+    if(!match && draft.slot_to_roster_id){
+      const slot=Object.entries(draft.slot_to_roster_id).find(([,rid])=>
+        Number(rid)===Number(ownerRid)
+      )?.[0];
+      if(slot){
+        match=draft.picks.find(p=>
+          Number(p.round)===targetRound &&
+          Number(p.draft_slot)===Number(slot)
+        );
+        if(match) dbg(`Strategy 3 (slot_to_roster_id) matched pick_no=${match.pick_no}`);
+      }
+    }
+
+    // Strategy 4: draft_pick_order map (startup drafts often have this)
+    if(!match && draft.draft_order){
+      // draft_order maps user_id -> draft_slot
+      const rosterEntry=S.rosterMap[ownerRid];
+      if(rosterEntry?.owner_id){
+        const slot=draft.draft_order[rosterEntry.owner_id];
+        if(slot){
+          match=draft.picks.find(p=>
+            Number(p.round)===targetRound &&
+            Number(p.draft_slot)===Number(slot)
+          );
+          if(match) dbg(`Strategy 4 (draft_order slot) matched pick_no=${match.pick_no}`);
+        }
+      }
+    }
+
     if(match?.player_id){
       const pl=P[match.player_id];
-      return{player_id:match.player_id,name:pl?.full_name||match.player_id,position:pl?.position||'',team:pl?.team||'N/A',pick_no:match.pick_no,round:match.round};
+      dbg(`Resolved to player: ${pl?.full_name || match.player_id} (pick #${match.pick_no})`);
+
+      // Compute within-round position for "2.03" style label
+      const withinRound=match.pick_no ? ((match.pick_no-1) % picksPerRound)+1 : null;
+
+      return{
+        player_id: match.player_id,
+        name: pl?.full_name || match.player_id,
+        position: pl?.position || '',
+        team: pl?.team || 'N/A',
+        pick_no: match.pick_no,
+        round: match.round,
+        picks_per_round: picksPerRound,  // Bug 2 fix: always set this
+        within_round: withinRound
+      };
+    } else if(match){
+      dbg(`Match found but no player_id (pick may be pending or unselected)`, 'warn');
+    } else {
+      dbg(`No match found in draft ${draft.draft_id} for round ${targetRound} owner ${ownerRid}`, 'warn');
+      // Log a sample of round picks for debugging
+      if(window._DEBUG){
+        const roundPicks=draft.picks.filter(p=>Number(p.round)===targetRound);
+        dbg(`Round ${targetRound} picks: ${JSON.stringify(roundPicks.map(p=>({roster_id:p.roster_id,picked_by:p.picked_by,pick_no:p.pick_no,player_id:p.player_id})))}`);
+      }
     }
   }
+
+  dbg(`Could not resolve pick season=${targetSeason} round=${targetRound}`, 'warn');
   return null;
+}
+
+// ── pickLabel: format as "2024 2.03" when resolved, "2024 2nd" when not ───
+function pickLabel(pk, resolved){
+  const roundSuffix=n=>['th','st','nd','rd'][((n%100-20)%10)||n%100>10?0:n%10]||'th';
+  if(resolved && resolved.within_round != null && resolved.picks_per_round){
+    const pad=String(resolved.within_round).padStart(2,'0');
+    return `${pk.season} ${pk.round}.${pad}`;
+  }
+  return `${pk.season} ${pk.round}${roundSuffix(pk.round)}`;
+}
+
+function renderPickPill(pk){
+  const resolved=S.isDynasty ? resolvePickToPlayer(pk, S.draftData) : null;
+  const yr=new Date().getFullYear();
+  const future=parseInt(pk.season)>yr;
+  const orig=S.rosterMap[pk.roster_id]?.name || `Team ${pk.roster_id}`;
+  const showOrig=pk.roster_id && pk.roster_id !== pk.owner_id;
+  const label=pickLabel(pk, resolved);
+  let sub='';
+  if(future){
+    sub=`<span style="color:#f59e0b"> · ${showOrig ? esc(orig) : 'future pick'}</span>`;
+  } else if(resolved){
+    sub=`<span style="color:#86efac"> · ${esc(resolved.name)}</span>`;
+  } else {
+    sub=`<span style="color:#8892a0"> · ${showOrig ? esc(orig)+' (unresolved)' : 'unresolved'}</span>`;
+  }
+  return `<div class="pick-pill"><i class="ti ti-ticket" style="font-size:.7rem"></i>${label}${sub}</div>`;
 }
 
 // ── Fetch flow ─────────────────────────────────────────────────────────────
@@ -327,7 +481,8 @@ async function fetchLeagues(){
   const un=document.getElementById('username-input').value.trim();
   if(!un){showErr('fetch-error','Please enter a username');return;}
   const btn=document.getElementById('fetch-btn');
-  btn.disabled=true;btn.innerHTML='<span class="loader"></span> Loading...';
+  btn.disabled=true;
+  btn.innerHTML='<span class="loader"></span> Loading...';
   hideErr('fetch-error');
   try{
     const user=await api(`/user/${un}`).catch(()=>{throw new Error(`User "${un}" not found.`);});
@@ -336,14 +491,16 @@ async function fetchLeagues(){
     const seasons=Array.from({length:6},(_,i)=>String(yr-i));
     let all=[];
     for(const s of seasons){
-      try{const ls=await api(`/user/${user.user_id}/leagues/nfl/${s}`);if(ls?.length)all.push(...ls.map(l=>({...l,season:s})));}
-      catch(e){}
+      try{
+        const ls=await api(`/user/${user.user_id}/leagues/nfl/${s}`);
+        if(ls?.length) all.push(...ls.map(l=>({...l,season:s})));
+      }catch(e){}
     }
-    if(!all.length)throw new Error('No leagues found.');
+    if(!all.length) throw new Error('No leagues found.');
     S.leagues=all;
     document.getElementById('leagues-list').innerHTML=all.map((l,i)=>{
       const dyn=isDynastyLeague(l);
-      return`<div class="league-item" onclick="selectLeague(${i})">
+      return `<div class="league-item" onclick="selectLeague(${i})">
         <div>
           <div class="league-name">${esc(l.name)}<span class="league-type-badge ${dyn?'dynasty-badge':'redraft-badge'}">${dyn?'Dynasty':'Redraft'}</span></div>
           <div class="league-meta">${l.season} · ${l.total_rosters} teams</div>
@@ -354,7 +511,8 @@ async function fetchLeagues(){
     document.getElementById('card-leagues').classList.remove('hidden');
     setStep(2);
   }catch(e){showErr('fetch-error',e.message);}
-  btn.disabled=false;btn.innerHTML='<i class="ti ti-search"></i> Find leagues';
+  btn.disabled=false;
+  btn.innerHTML='<i class="ti ti-search"></i> Find leagues';
 }
 
 async function selectLeague(idx){
@@ -370,19 +528,25 @@ async function selectLeague(idx){
       api(`/league/${S.league.league_id}/rosters`),
       api(`/league/${S.league.league_id}/users`)
     ]);
-    const uMap={};users.forEach(u=>uMap[u.user_id]=u.display_name||u.username);
-    S.rosterMap={};ros.forEach(r=>{S.rosterMap[r.roster_id]={...r,name:uMap[r.owner_id]||`Team ${r.roster_id}`};});
+    const uMap={};
+    users.forEach(u=>uMap[u.user_id]=u.display_name||u.username);
+    S.rosterMap={};
+    ros.forEach(r=>{S.rosterMap[r.roster_id]={...r, name:uMap[r.owner_id]||`Team ${r.roster_id}`};});
     const me=ros.find(r=>r.owner_id===S.userId);
-    if(!me)throw new Error("Couldn't find your roster.");
+    if(!me) throw new Error("Couldn't find your roster.");
     S.myRid=me.roster_id;
     if(!window._P) window._P=await api('/players/nfl').catch(()=>({}));
-    // Fetch draft data only for dynasty leagues
+
+    // Fetch draft data for dynasty — includes forward season walk (Bug 3 fix)
     if(S.isDynasty) S.draftData=await fetchDraftData(S.league.league_id);
+
     const ps=S.league.settings?.playoff_week_start||14;
     const txAll=[];
     for(let w=1;w<=ps;w++){
-      try{const tx=await api(`/league/${S.league.league_id}/transactions/${w}`);if(tx?.length)txAll.push(...tx.map(t=>({...t,week:w})));}
-      catch(e){}
+      try{
+        const tx=await api(`/league/${S.league.league_id}/transactions/${w}`);
+        if(tx?.length) txAll.push(...tx.map(t=>({...t,week:w})));
+      }catch(e){}
     }
     const myTrades=txAll.filter(t=>t.type==='trade'&&t.roster_ids?.includes(S.myRid));
     S.transactions=myTrades;
@@ -391,35 +555,6 @@ async function selectLeague(idx){
   }catch(e){
     tradesEl.innerHTML=`<div class="card-title">Error</div><div class="error"><i class="ti ti-alert-circle"></i> ${esc(e.message)}</div>`;
   }
-}
-
-function pickLabel(pk, resolved){
-  // Format: "2025 1.02" if resolved (round.pick_within_round), else "2025 2nd"
-  const roundSuffix=n=>['th','st','nd','rd'][((n%100-20)%10)||n%100>10?0:n%10]||'th';
-  if(resolved&&resolved.pick_no&&resolved.picks_per_round){
-    const within=((resolved.pick_no-1)%resolved.picks_per_round)+1;
-    const pad=String(within).padStart(2,'0');
-    return`${pk.season} ${pk.round}.${pad}`;
-  }
-  return`${pk.season} ${pk.round}${roundSuffix(pk.round)}`;
-}
-
-function renderPickPill(pk){
-  const resolved=S.isDynasty?resolvePickToPlayer(pk,S.draftData):null;
-  const yr=new Date().getFullYear();
-  const future=parseInt(pk.season)>yr;
-  const orig=S.rosterMap[pk.roster_id]?.name||`Team ${pk.roster_id}`; // roster_id = original owner
-  const showOrig=pk.roster_id&&pk.roster_id!==pk.owner_id;
-  const label=pickLabel(pk,resolved);
-  let sub='';
-  if(future){
-    sub=`<span style="color:#f59e0b"> · ${showOrig?esc(orig):'future pick'}</span>`;
-  } else if(resolved){
-    sub=`<span style="color:#86efac"> · ${esc(resolved.name)}</span>`;
-  } else {
-    sub=`<span style="color:#8892a0"> · ${showOrig?esc(orig)+' (unresolved)':'unresolved'}</span>`;
-  }
-  return`<div class="pick-pill"><i class="ti ti-ticket" style="font-size:.7rem"></i>${label}${sub}</div>`;
 }
 
 function renderTrades(trades){
@@ -432,27 +567,27 @@ function renderTrades(trades){
   el.innerHTML='<div class="card-title"><i class="ti ti-arrows-exchange"></i> Select a trade to analyze</div>'+
     `<div class="info-box"><i class="ti ti-info-circle"></i> ${S.isDynasty?'Dynasty league — picks show season, round, and drafted player where resolved.':'Redraft league — player points simulation only.'}</div>`+
     trades.map((t,i)=>{
-      const myIdx=t.roster_ids.indexOf(S.myRid),theirIdx=myIdx===0?1:0;
+      const myIdx=t.roster_ids.indexOf(S.myRid);
+      const theirIdx=myIdx===0?1:0;
       const gotPlayers=t.adds?Object.entries(t.adds).filter(([,r])=>r===S.myRid).map(([p])=>P[p]?.full_name||p):[];
       const gavePlayers=t.drops?Object.entries(t.drops).filter(([,r])=>r===S.myRid).map(([p])=>P[p]?.full_name||p):[];
       const gotPicks=S.isDynasty?(t.draft_picks||[]).filter(pk=>pk.owner_id===S.myRid):[];
       const gavePicks=S.isDynasty?(t.draft_picks||[]).filter(pk=>pk.previous_owner_id===S.myRid):[];
       const opp=S.rosterMap[t.roster_ids[theirIdx]]?.name||'Opponent';
-      const hasContent=gotPlayers.length||gavePlayers.length||gotPicks.length||gavePicks.length;
-      return`<div class="trade-card" onclick="selectTrade(${i})">
+      return `<div class="trade-card" onclick="selectTrade(${i})">
         <div class="trade-header"><span style="font-size:.85rem;font-weight:500">vs ${esc(opp)}</span><span class="badge-neutral">Week ${t.week}</span></div>
         <div class="trade-players">
           <div class="trade-side">
             <div class="got">You received</div>
             ${gotPlayers.map(p=>`<div class="player-name">${esc(p)}</div>`).join('')}
-            ${gotPicks.map(pk=>renderPickPill(pk,'got')).join('')}
+            ${gotPicks.map(pk=>renderPickPill(pk)).join('')}
             ${!gotPlayers.length&&!gotPicks.length?'<div style="color:#4a5568;font-size:.78rem">—</div>':''}
           </div>
           <div class="trade-arrow"><i class="ti ti-arrows-exchange"></i></div>
           <div class="trade-side">
             <div class="gave">You gave</div>
             ${gavePlayers.map(p=>`<div class="player-name">${esc(p)}</div>`).join('')}
-            ${gavePicks.map(pk=>renderPickPill(pk,'gave')).join('')}
+            ${gavePicks.map(pk=>renderPickPill(pk)).join('')}
             ${!gavePlayers.length&&!gavePicks.length?'<div style="color:#4a5568;font-size:.78rem">—</div>':''}
           </div>
         </div>
@@ -481,25 +616,22 @@ async function runSimulation(){
   const playoffSpots=league.settings?.playoff_teams||4;
   const P=window._P||{};
 
-  // Player IDs in this trade
   const iGotIds=trade.adds?Object.entries(trade.adds).filter(([,r])=>r===S.myRid).map(([p])=>p):[];
   const iGaveIds=trade.drops?Object.entries(trade.drops).filter(([,r])=>r===S.myRid).map(([p])=>p):[];
   const allTradedIds=[...new Set([...Object.keys(trade.adds||{}),...Object.keys(trade.drops||{})])];
 
-  // Dynasty: resolve picks to players and add to tracked IDs
   let gotPicks=[],gavePicks=[],resolvedGotPicks=[],resolvedGavePicks=[];
   let picksGotPlayerIds=[],picksGavePlayerIds=[];
   if(S.isDynasty){
     gotPicks=(trade.draft_picks||[]).filter(pk=>pk.owner_id===S.myRid);
     gavePicks=(trade.draft_picks||[]).filter(pk=>pk.previous_owner_id===S.myRid);
-    resolvedGotPicks=gotPicks.map(pk=>({...pk,resolved:resolvePickToPlayer(pk,S.draftData)}));
-    resolvedGavePicks=gavePicks.map(pk=>({...pk,resolved:resolvePickToPlayer(pk,S.draftData)}));
+    resolvedGotPicks=gotPicks.map(pk=>({...pk, resolved:resolvePickToPlayer(pk,S.draftData)}));
+    resolvedGavePicks=gavePicks.map(pk=>({...pk, resolved:resolvePickToPlayer(pk,S.draftData)}));
     picksGotPlayerIds=resolvedGotPicks.filter(p=>p.resolved).map(p=>p.resolved.player_id);
     picksGavePlayerIds=resolvedGavePicks.filter(p=>p.resolved).map(p=>p.resolved.player_id);
   }
   const allTrackedIds=[...new Set([...allTradedIds,...picksGotPlayerIds,...picksGavePlayerIds])];
 
-  // Fetch all matchup weeks
   const allMatchups={};
   for(let w=1;w<=playoffStart+4;w++){
     try{allMatchups[w]=await api(`/league/${league.league_id}/matchups/${w}`);}
@@ -511,8 +643,6 @@ async function runSimulation(){
   rIds.forEach(rid=>{teamStats[rid]={wins:0,losses:0,pts:0,cfWins:0,cfLosses:0,cfPts:0};});
   const myWeekData=[];
 
-  // CF score function: for a given week+roster, compute counterfactual score
-  // by properly swapping traded players (and pick-drafted players for dynasty) across rosters
   function getCFScore(week, rosterId){
     if(week<tradeWeek) return null;
     const mu=allMatchups[week];
@@ -522,40 +652,29 @@ async function runSimulation(){
     let score=entry.points||0;
 
     allTrackedIds.forEach(pid=>{
-      // Determine how this player moved in the trade (from my perspective)
-      const myTeamReceived=!!trade.adds&&trade.adds[pid]===S.myRid;    // I got this player
-      const myTeamGave=!!trade.drops&&trade.drops[pid]===S.myRid;      // I gave this player
-      const isPickGot=picksGotPlayerIds.includes(pid);   // I got a pick that selected this player
-      const isPickGave=picksGavePlayerIds.includes(pid); // I gave a pick that selected this player
-      // Who actually has this player this week?
+      const myTeamReceived=!!trade.adds && trade.adds[pid]===S.myRid;
+      const myTeamGave=!!trade.drops && trade.drops[pid]===S.myRid;
+      const isPickGot=picksGotPlayerIds.includes(pid);
+      const isPickGave=picksGavePlayerIds.includes(pid);
       let actualHolder=null;
-      mu.forEach(m=>{if(m.players_points&&pid in m.players_points)actualHolder=m.roster_id;});
+      mu.forEach(m=>{if(m.players_points && pid in m.players_points) actualHolder=m.roster_id;});
       if(actualHolder===null) return;
       const holderEntry=mu.find(m=>m.roster_id===actualHolder);
       const pts=(holderEntry?.players_points||{})[pid]||0;
       if(!pts) return;
 
       if(rosterId===actualHolder){
-        // This roster has the player in actuality
-        // In CF, should they NOT have them?
         if(myTeamReceived||isPickGot){
-          // I received this player/pick — in CF I wouldn't have them
           if(rosterId===S.myRid) score-=pts;
         }
-        // If myTeamGave/isPickGave: the other team has them, and in CF they wouldn't — handled below
-        const theyReceived=!!trade.adds&&trade.adds[pid]!==undefined&&trade.adds[pid]===rosterId&&trade.adds[pid]!==S.myRid;
-        if(theyReceived&&rosterId!==S.myRid) score-=pts;
+        const theyReceived=!!trade.adds && trade.adds[pid]!==undefined && trade.adds[pid]===rosterId && trade.adds[pid]!==S.myRid;
+        if(theyReceived && rosterId!==S.myRid) score-=pts;
       } else {
-        // This roster does NOT have the player in actuality
-        // In CF, should they have them?
-        if((myTeamGave||isPickGave)&&rosterId===S.myRid){
-          // I gave this player away — in CF I'd still have them
+        if((myTeamGave||isPickGave) && rosterId===S.myRid){
           score+=pts;
         }
         if(rosterId!==S.myRid){
-          // Was this player given TO this other roster? In CF they wouldn't have them (already handled above)
-          // Was this player given FROM this other roster? In CF they'd still have them
-          const theyGave=!!trade.drops&&trade.drops[pid]===rosterId;
+          const theyGave=!!trade.drops && trade.drops[pid]===rosterId;
           if(theyGave) score+=pts;
         }
       }
@@ -563,43 +682,43 @@ async function runSimulation(){
     return Math.max(0,score);
   }
 
-  // Regular season
   for(let w=1;w<=totRegWks;w++){
     const mu=allMatchups[w]; if(!mu) continue;
     const pairs={};
-    mu.forEach(m=>{if(!pairs[m.matchup_id])pairs[m.matchup_id]=[];pairs[m.matchup_id].push(m);});
+    mu.forEach(m=>{if(!pairs[m.matchup_id]) pairs[m.matchup_id]=[];pairs[m.matchup_id].push(m);});
     Object.values(pairs).forEach(pair=>{
-      if(pair.length!==2)return;
+      if(pair.length!==2) return;
       const [a,b]=pair;
-      const aPts=a.points||0,bPts=b.points||0;
+      const aPts=a.points||0, bPts=b.points||0;
       if(aPts>bPts){teamStats[a.roster_id].wins++;teamStats[b.roster_id].losses++;}
       else{teamStats[b.roster_id].wins++;teamStats[a.roster_id].losses++;}
-      teamStats[a.roster_id].pts+=aPts;teamStats[b.roster_id].pts+=bPts;
+      teamStats[a.roster_id].pts+=aPts;
+      teamStats[b.roster_id].pts+=bPts;
       const aCF=getCFScore(w,a.roster_id)??aPts;
       const bCF=getCFScore(w,b.roster_id)??bPts;
       if(aCF>bCF){teamStats[a.roster_id].cfWins++;teamStats[b.roster_id].cfLosses++;}
       else{teamStats[b.roster_id].cfWins++;teamStats[a.roster_id].cfLosses++;}
-      teamStats[a.roster_id].cfPts+=aCF;teamStats[b.roster_id].cfPts+=bCF;
-      if(a.roster_id===S.myRid||b.roster_id===S.myRid){
+      teamStats[a.roster_id].cfPts+=aCF;
+      teamStats[b.roster_id].cfPts+=bCF;
+      if(a.roster_id===S.myRid || b.roster_id===S.myRid){
         const isA=a.roster_id===S.myRid;
-        const myActual=isA?aPts:bPts,oppActual=isA?bPts:aPts;
+        const myActual=isA?aPts:bPts, oppActual=isA?bPts:aPts;
         const myCF=isA?aCF:bCF;
         myWeekData.push({w,myActual,myCF,oppScore:oppActual,aW:myActual>oppActual,cfW:myCF>oppActual});
       }
     });
   }
 
-  // Standings
   const sortS=cf=>rIds.map(rid=>{
     const s=teamStats[rid];
     return{rid,name:S.rosterMap[rid]?.name||`Team ${rid}`,
       wins:cf?s.cfWins:s.wins,losses:cf?s.cfLosses:s.losses,pts:cf?s.cfPts:s.pts,isMe:rid===S.myRid};
   }).sort((a,b)=>b.wins-a.wins||b.pts-a.pts);
 
-  const actualS=sortS(false),cfS=sortS(true);
+  const actualS=sortS(false), cfS=sortS(true);
   const myActualRank=actualS.findIndex(t=>t.isMe)+1;
   const myCFRank=cfS.findIndex(t=>t.isMe)+1;
-  const myActualIn=myActualRank<=playoffSpots,myCFIn=myCFRank<=playoffSpots;
+  const myActualIn=myActualRank<=playoffSpots, myCFIn=myCFRank<=playoffSpots;
   const ms=teamStats[S.myRid];
   const ptsDiff=(ms.pts-ms.cfPts).toFixed(1);
   const outcome=ms.wins>ms.cfWins?'win':ms.wins<ms.cfWins?'loss':'neutral';
@@ -607,17 +726,15 @@ async function runSimulation(){
   renderResults({totalActualW:ms.wins,totalActualL:ms.losses,totalCFW:ms.cfWins,totalCFL:ms.cfLosses,
     actualPts:ms.pts,cfPts:ms.cfPts,ptsDiff,outcome,weekData:myWeekData,tradeWeek});
 
-  // Dynasty: render pick details card
-  if(S.isDynasty&&(resolvedGotPicks.length||resolvedGavePicks.length)){
+  if(S.isDynasty && (resolvedGotPicks.length||resolvedGavePicks.length)){
     document.getElementById('card-picks').classList.remove('hidden');
-    renderPickDetails(resolvedGotPicks,resolvedGavePicks);
+    renderPickDetails(resolvedGotPicks, resolvedGavePicks);
   }
 
   renderPlayoffStandings({actualS,cfS,myActualRank,myCFRank,myActualIn,myCFIn,playoffSpots},'playoff-content');
 
-  // Playoff bracket
   const playoffWks=[];
-  for(let w=playoffStart;w<=playoffStart+4;w++){if(allMatchups[w]?.length)playoffWks.push(w);}
+  for(let w=playoffStart;w<=playoffStart+4;w++){if(allMatchups[w]?.length) playoffWks.push(w);}
   const actualBracket=simulateBracket(actualS.slice(0,playoffSpots),playoffWks,allMatchups,false,getCFScore);
   const cfBracket=simulateBracket(cfS.slice(0,playoffSpots),playoffWks,allMatchups,true,getCFScore);
   renderBracket(actualBracket,cfBracket,'bracket-content');
@@ -630,29 +747,30 @@ function renderPickDetails(gotPicks, gavePicks){
     const got=dir==='got';
     const future=parseInt(pk.season)>yr;
     const orig=S.rosterMap[pk.roster_id]?.name||`Team ${pk.roster_id}`;
-    const via=pk.previous_owner_id&&pk.previous_owner_id!==pk.roster_id
-      ?`Via ${S.rosterMap[pk.previous_owner_id]?.name||`Team ${pk.previous_owner_id}`}`:null;
+    const via=pk.previous_owner_id && pk.previous_owner_id!==pk.roster_id
+      ? `Via ${S.rosterMap[pk.previous_owner_id]?.name||`Team ${pk.previous_owner_id}`}` : null;
     const label=pickLabel(pk, pk.resolved);
-    let statusHTML='',draftedHTML='';
+    let statusHTML='', draftedHTML='';
     if(future){
       statusHTML=`<div class="pick-status-pending"><i class="ti ti-clock"></i> Draft not yet held — pick is pending</div>`;
     } else if(pk.resolved){
       const r=pk.resolved;
-      const within=r.within_round?String(r.within_round).padStart(2,'0'):null;
-      const pickStr=within?`${r.round}.${within} (pick #${r.pick_no})`:`pick #${r.pick_no}`;
+      const pickStr=r.within_round != null
+        ? `${r.round}.${String(r.within_round).padStart(2,'0')} (pick #${r.pick_no})`
+        : `pick #${r.pick_no}`;
       statusHTML=`<div class="pick-status-resolved"><i class="ti ti-circle-check"></i> Resolved — ${pickStr}</div>`;
       draftedHTML=`<div class="drafted-player-box">
         <div class="drafted-player-name">${esc(r.name)}</div>
         <div class="drafted-player-meta">${r.position||''}${r.team?' · '+r.team:''} · ${label}</div>
         <div class="drafted-sim-note"><i class="ti ti-info-circle"></i> ${got
-          ?`${esc(r.name)}'s weekly points included in what-if (you wouldn't have had them)`
-          :`${esc(r.name)}'s weekly points included in what-if (you would have kept this pick)`
+          ? `${esc(r.name)}'s weekly points included in what-if (you wouldn't have had them)`
+          : `${esc(r.name)}'s weekly points included in what-if (you would have kept this pick)`
         }</div>
       </div>`;
     } else {
-      statusHTML=`<div class="pick-status-used"><i class="ti ti-minus"></i> Draft held but pick selection not found</div>`;
+      statusHTML=`<div class="pick-status-used"><i class="ti ti-minus"></i> Draft held but pick selection could not be matched — enable debug mode (window._DEBUG=true) for details</div>`;
     }
-    return`<div class="pick-card">
+    return `<div class="pick-card">
       <div class="pick-card-header">
         <span class="pick-card-label">📋 ${label}</span>
         <span class="pick-dir ${got?'pick-dir-got':'pick-dir-gave'}">${got?'You received':'You gave'}</span>
@@ -694,8 +812,8 @@ function renderResults(d){
     </div>
     <div class="week-chart">
       ${weekData.map(w=>{
-        const aW=Math.round(w.myActual/maxPts*200),cW=Math.round(w.myCF/maxPts*200),pre=w.w<tradeWeek;
-        return`<div class="week-row" style="${pre?'opacity:.4':''}">
+        const aW=Math.round(w.myActual/maxPts*200), cW=Math.round(w.myCF/maxPts*200), pre=w.w<tradeWeek;
+        return `<div class="week-row" style="${pre?'opacity:.4':''}">
           <span class="week-num">Wk ${w.w}${pre?' ◂':''}</span>
           <div class="bar-wrap">
             <div class="bar bar-actual" style="width:${aW}px">${w.myActual.toFixed(0)}</div>
@@ -714,7 +832,7 @@ function renderPlayoffStandings(d,tid){
   if(myActualIn&&myCFIn){
     if(myActualRank<myCFRank){bc='in';bi='🟢';bt=`Trade improved your seeding: ${ord(myCFRank)} → ${ord(myActualRank)}`;bs='You made playoffs either way — but got a better seed.';}
     else if(myActualRank>myCFRank){bc='neutral';bi='🟡';bt=`Trade hurt your seeding: ${ord(myCFRank)} → ${ord(myActualRank)}`;bs='You made playoffs either way — but would have had a better seed without the trade.';}
-    else{bc='neutral';bi='🟡';bt=`No seeding impact — ${ord(myActualRank)} seed either way`;bs='The trade didn\'t change your playoff position.';}
+    else{bc='neutral';bi='🟡';bt=`No seeding impact — ${ord(myActualRank)} seed either way`;bs="The trade didn't change your playoff position.";}
   }else if(myActualIn&&!myCFIn){bc='in';bi='🟢';bt='The trade got you into the playoffs!';bs=`Without it you'd have finished ${ord(myCFRank)} — outside top ${playoffSpots}.`;}
   else if(!myActualIn&&myCFIn){bc='out';bi='🔴';bt='The trade knocked you out of the playoffs';bs=`Without it you'd have finished ${ord(myCFRank)} — inside top ${playoffSpots}.`;}
   else{
@@ -723,7 +841,8 @@ function renderPlayoffStandings(d,tid){
     else{bc='neutral';bi='🟡';bt=`Finished ${ord(myActualRank)} either way`;bs='No standings impact from this trade.';}
   }
   const rd=myCFRank-myActualRank;
-  const rch=rd===0?`<span class="change-same"><i class="ti ti-minus"></i> Same position</span>`
+  const rch=rd===0
+    ?`<span class="change-same"><i class="ti ti-minus"></i> Same position</span>`
     :rd>0?`<span class="change-up"><i class="ti ti-arrow-up"></i> ${rd} spot${rd>1?'s':''} better with trade</span>`
     :`<span class="change-down"><i class="ti ti-arrow-down"></i> ${Math.abs(rd)} spot${Math.abs(rd)>1?'s':''} worse with trade</span>`;
   const tbl=(st,lbl,mc)=>`<div>
@@ -749,14 +868,14 @@ function renderPlayoffStandings(d,tid){
     </div>`;
 }
 
-function simulateBracket(playoffTeams, playoffWks, allMatchups, useCF, getCFScore){
+function simulateBracket(playoffTeams,playoffWks,allMatchups,useCF,getCFScore){
   const rounds=[];
   let remaining=playoffTeams.map((t,i)=>({...t,seed:i+1}));
   playoffWks.forEach((wk,ri)=>{
     const mu=allMatchups[wk];
     if(!mu?.length) return;
     const pairs={};
-    mu.forEach(m=>{if(!pairs[m.matchup_id])pairs[m.matchup_id]=[];pairs[m.matchup_id].push(m);});
+    mu.forEach(m=>{if(!pairs[m.matchup_id]) pairs[m.matchup_id]=[];pairs[m.matchup_id].push(m);});
     const roundMUs=[];
     Object.values(pairs).forEach(pair=>{
       if(pair.length!==2) return;
@@ -795,13 +914,13 @@ function renderBracket(actual,cf,tid){
   const rName=(n,total)=>{const r=total-n+1;return r===1?'Championship':r===2?'Semifinals':r===3?'Quarterfinals':`Round ${n}`;};
   const side=(bracket,label)=>{
     const total=bracket.rounds.length;
-    return`<div>
+    return `<div>
       <div class="bracket-col-title">${label}</div>
       ${bracket.rounds.map(round=>`<div class="bracket-round">
         <div class="round-label">${rName(round.roundNum,total)}</div>
         ${round.matchups.map(m=>{
           const aW=m.winner.rid===m.teamA.rid;
-          return`<div class="matchup-box">
+          return `<div class="matchup-box">
             <div class="matchup-team ${aW?'winner':'loser'} ${m.teamA.isMe?'me-team':''}">
               <span><span class="seed-chip">${m.teamA.seed}</span>${esc(m.teamA.name)}${m.teamA.isMe?' ▶':''}</span>
               <span class="matchup-pts ${aW?'winner-pts':''}">${m.teamA.pts.toFixed(1)}</span>
@@ -816,7 +935,7 @@ function renderBracket(actual,cf,tid){
       ${bracket.champion?`<div class="champion-badge">🏆 Champion: ${esc(bracket.champion.name)}</div>`:''}
     </div>`;
   };
-  const ar=getBracketResult(actual),cr=getBracketResult(cf);
+  const ar=getBracketResult(actual), cr=getBracketResult(cf);
   let bi,bc,bt,bs;
   if(ar.champion&&cr.champion){bi='🟡';bc='neutral';bt='Champion either way';bs='The trade had no impact on the championship outcome.';}
   else if(ar.champion&&!cr.champion){bi='🟢';bc='in';bt='The trade helped you win the championship!';bs=`Without it you'd have been eliminated in round ${cr.roundsWon+1}.`;}
@@ -824,10 +943,10 @@ function renderBracket(actual,cf,tid){
   else if(ar.inPlayoffs&&cr.inPlayoffs){
     if(ar.roundsWon>cr.roundsWon){bi='🟢';bc='in';bt=`Trade helped: ${ar.roundsWon} round${ar.roundsWon!==1?'s':''} won vs ${cr.roundsWon} without`;bs='The trade got you further in the playoffs.';}
     else if(ar.roundsWon<cr.roundsWon){bi='🔴';bc='out';bt=`Trade hurt: ${ar.roundsWon} round${ar.roundsWon!==1?'s':''} won vs ${cr.roundsWon} without`;bs='You would have gone further without the trade.';}
-    else{bi='🟡';bc='neutral';bt=`Same result — ${ar.roundsWon} round${ar.roundsWon!==1?'s':''} won either way`;bs='The trade didn\'t change how far you went.';}
-  }else if(ar.inPlayoffs&&!cr.inPlayoffs){bi='🟢';bc='in';bt='Trade got you into the playoffs';bs='Without it you wouldn\'t have qualified.';}
+    else{bi='🟡';bc='neutral';bt=`Same result — ${ar.roundsWon} round${ar.roundsWon!==1?'s':''} won either way`;bs="The trade didn't change how far you went.";}
+  }else if(ar.inPlayoffs&&!cr.inPlayoffs){bi='🟢';bc='in';bt='Trade got you into the playoffs';bs="Without it you wouldn't have qualified.";}
   else if(!ar.inPlayoffs&&cr.inPlayoffs){bi='🔴';bc='out';bt='Trade kept you out of the playoffs';bs='Without it you would have qualified.';}
-  else{bi='🟡';bc='neutral';bt='Neither scenario reached the playoffs';bs='The trade didn\'t affect your playoff chances.';}
+  else{bi='🟡';bc='neutral';bt='Neither scenario reached the playoffs';bs="The trade didn't affect your playoff chances.";}
 
   document.getElementById(tid).innerHTML=`
     <div class="playoff-banner ${bc}"><div class="p-icon">${bi}</div><div><div class="p-title">${bt}</div><div class="p-sub">${bs}</div></div></div>
@@ -850,24 +969,30 @@ function runManualSim(){
   const gavePts=[...document.querySelectorAll('.gave-pts')].map(i=>i.value.split(',').map(Number).filter(n=>!isNaN(n)));
   if(myScores.length<totWks||oppScores.length<totWks){showErr('manual-error',`Need ${totWks} scores for all regular season weeks.`);return;}
   hideErr('manual-error');
-  let aW=0,aL=0,cfW=0,cfL=0,aPts=0,cfPts=0;const wd=[];
+  let aW=0,aL=0,cfW=0,cfL=0,aPts=0,cfPts=0;
+  const wd=[];
   for(let i=0;i<totWks;i++){
-    const my=myScores[i]||0,opp=oppScores[i]||0;let delta=0;
-    if(i>=tradeWk-1){recPts.forEach(pts=>{delta-=(pts[i-(tradeWk-1)]||0);});gavePts.forEach(pts=>{delta+=(pts[i-(tradeWk-1)]||0);});}
+    const my=myScores[i]||0, opp=oppScores[i]||0;
+    let delta=0;
+    if(i>=tradeWk-1){
+      recPts.forEach(pts=>{delta-=(pts[i-(tradeWk-1)]||0);});
+      gavePts.forEach(pts=>{delta+=(pts[i-(tradeWk-1)]||0);});
+    }
     const myCF=Math.max(0,my+delta);
-    aPts+=my;cfPts+=myCF;if(my>opp)aW++;else aL++;if(myCF>opp)cfW++;else cfL++;
+    aPts+=my;cfPts+=myCF;
+    if(my>opp)aW++;else aL++;
+    if(myCF>opp)cfW++;else cfL++;
     wd.push({w:i+1,myActual:my,myCF,oppScore:opp,aW:my>opp,cfW:myCF>opp});
   }
-  const ptsDiff=(aPts-cfPts).toFixed(1),outcome=aW>cfW?'win':aW<cfW?'loss':'neutral';
+  const ptsDiff=(aPts-cfPts).toFixed(1), outcome=aW>cfW?'win':aW<cfW?'loss':'neutral';
   document.getElementById('manual-results').classList.remove('hidden');
-  // Temporarily set S.isDynasty false for manual render
   const wasDyn=S.isDynasty;S.isDynasty=false;
   renderResults({totalActualW:aW,totalActualL:aL,totalCFW:cfW,totalCFL:cfL,actualPts:aPts,cfPts,ptsDiff,outcome,weekData:wd,tradeWeek:tradeWk});
   S.isDynasty=wasDyn;
   document.getElementById('manual-results-content').innerHTML=document.getElementById('results-content').innerHTML;
   const aRank=Math.max(1,Math.min(teams,Math.round((1-(aW/totWks))*teams)));
   const cfRank=Math.max(1,Math.min(teams,Math.round((1-(cfW/totWks))*teams)));
-  const aIn=aRank<=spots,cfIn=cfRank<=spots;
+  const aIn=aRank<=spots, cfIn=cfRank<=spots;
   document.getElementById('manual-playoff-content').innerHTML=`
     <div class="info-box"><i class="ti ti-info-circle"></i> Playoff position is estimated from your record. Use Fetch from Sleeper for full accuracy &amp; bracket simulation.</div>
     <div class="result-grid">
@@ -877,11 +1002,12 @@ function runManualSim(){
 }
 
 function addRow(cid,nc,pc){
-  const el=document.getElementById(cid),row=document.createElement('div');
+  const el=document.getElementById(cid), row=document.createElement('div');
   row.style.cssText='display:flex;gap:8px;margin-bottom:8px';
   row.innerHTML=`<input type="text" placeholder="Player name" class="${nc}"/><input type="text" placeholder="Wk pts (comma sep)" class="${pc}" style="max-width:160px"/><button onclick="this.parentElement.remove()" style="background:none;border:none;color:#4a5568;cursor:pointer;padding:4px"><i class="ti ti-trash"></i></button>`;
   el.appendChild(row);
 }
+
 function ord(n){const s=['th','st','nd','rd'],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0]);}
 function resetToTrades(){document.getElementById('card-results').classList.add('hidden');setStep(3);}
 function showErr(id,msg){const el=document.getElementById(id);el.classList.remove('hidden');el.querySelector('span').textContent=msg;}
